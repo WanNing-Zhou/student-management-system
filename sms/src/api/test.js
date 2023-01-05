@@ -1,12 +1,12 @@
 import request from "@/utils/request";
 
 export default {
-    test(){
+    test() {
         request({
-            url:'/test',
-            methods:'get'
-        }).then(res =>{
-            console.log(res)
+            url: '/',
+            method: 'get'
+        }).then(response => {
+            console.log(response);
         })
     }
 }
