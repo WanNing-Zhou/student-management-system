@@ -1,12 +1,18 @@
 <template>
   <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </nav>
-    <router-view />
+    你好
   </div>
 </template>
+
+<script>
+  import test from "@/api/test";
+  export default {
+    mounted() {
+      test.test();
+    }
+  }
+</script>
+
 
 <style lang="scss">
 #app {

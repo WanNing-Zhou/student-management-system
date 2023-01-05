@@ -6,4 +6,8 @@ router.get("/",(req,res)=>{
     res.send('测试成功')
 })
 
+router.get("/test",(req,res)=>{
+    res.send(测试成功)
+})
+
 module.exports = router
