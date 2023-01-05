@@ -1,16 +1,11 @@
 <template>
   <div id="app">
-    你好
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-  import test from "@/api/test";
-  export default {
-    mounted() {
-      test.test();
-    }
-  }
+
 </script>
 
 
