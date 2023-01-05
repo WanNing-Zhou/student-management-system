@@ -30,13 +30,19 @@ app.use('/node_modules',express.static(path.join(__dirname,'./node_modules')))
 const indexRouter = require('./routers')
 app.use('/', indexRouter)
 
-//通过mongoose连接数据库
-mongoose.connect('mongodb://localhoust/sms_server',{useNewUrlParser:true}).then(()=>{
-    console.log("数据库连接成功")
-    app.listen('3000',()=>{
-        console.log('服务器启动成功,请访问http://localhost:3000')
-    }).catch(error=>{
-        console.log('数据库连接失败',error)
+
+
+// 通过mongoose连接数据库
+mongoose.set('strictQuery', true);
+mongoose.connect('mongodb://localhost/sms_service', {
+    useNewUrlParser: true
+}).then(() => {
+    console.log("连接成功");
+    app.listen('3000', () => {
+        console.log("服务器启动成功,请启动http://127.0.0.1:3000");
     })
+}).catch((error) => {
+    console.log("连接失败");
+    console.log(error);
 })
 
