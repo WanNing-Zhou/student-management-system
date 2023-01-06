@@ -17,6 +17,9 @@
 </template>
 
 <script>
+//@/zz/yy相当于src下的zz下的yy
+import memoryUtils from "@/utils/memoryUtils";
+import {login} from '@/api/login'
 export default {
   name: "index.vue",
   data() {
@@ -63,9 +66,23 @@ export default {
   },
   methods: {
     onSubmit(formName) {
-      this.$refs[formName].validate((valid)=>{
+      this.$refs[formName].validate(async (valid)=>{
         if(valid){
           console.log(this.form.username,this.form.password)
+          //发送请求
+          let result = await login(this.form.username,this.form.password)
+          if (result.status == 0){
+            this.$message({
+              message:'登录成功',
+              type:"success"
+            })
+            memoryUtils.user = result.data
+            this.$router.replace("/")
+          }
+          console.log(result)
+        }else {
+          console.log("错误提交")
+          return false;
         }
       })
     }
