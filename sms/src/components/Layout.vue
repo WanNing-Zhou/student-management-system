@@ -3,6 +3,7 @@
     <app-header></app-header>
     <app-navbar></app-navbar>
     <app-main></app-main>
+
   </div>
 </template>
 

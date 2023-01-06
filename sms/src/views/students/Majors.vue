@@ -1,12 +1,10 @@
 <template>
-  <div class="main">
-    <router-view></router-view>
-  </div>
+  <div>专业管理</div>
 </template>
 
 <script>
 export default {
-
+  name: "Maiors"
 }
 </script>
 

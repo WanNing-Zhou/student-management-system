@@ -1,12 +1,12 @@
 <template>
-  <div class="main">
-    <router-view></router-view>
+  <div>
+    班级管理
   </div>
 </template>
 
 <script>
 export default {
-
+  name: "Class"
 }
 </script>
 
