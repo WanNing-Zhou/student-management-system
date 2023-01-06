@@ -17,10 +17,10 @@
               <span class="date-weather">
             <span class="date">{{ currentTime }}</span>
             &nbsp;&nbsp;|&nbsp;&nbsp;
-                <!--            <span class="weather">-->
-                <!--                <i :class="wea_img"></i>-->
-                <!--                &nbsp;&nbsp;{{ wea }}&nbsp;&nbsp;{{ tem_day }}/{{ tem_night }}C&deg;-->
-                <!--            </span>-->
+                <span class="weather">
+                  <i :class="wea_img"></i>
+                  &nbsp;&nbsp;{{ wea }}&nbsp;&nbsp;{{ tem_day }}/{{ tem_night }}C&deg;
+                </span>
         </span>
     </span>
   </div>
@@ -33,7 +33,11 @@ import {formatDate} from "@/utils/dateUtils";
 export default {
   data() {
     return {
-      currentTime: formatDate(Date.now())
+      currentTime: formatDate(Date.now()),
+      tem_day:'',
+      tem_night:'',
+      wea:'',
+      wea_img:'',
     }
   },
 
@@ -43,7 +47,24 @@ export default {
     },
     getWeather() {
       reqWeather('哈尔滨').then(res => {
-        console.log('天气信息', res)
+        const { tem_day,tem_night,wea,wea_img } = res;
+        const weaImgs = { //天气图标
+          xue: 'el-icon-light-rain',
+          lei: 'el-icon-lightning',
+          shachen: 'el-icon-sunrise',
+          wu: 'el-icon-cloudy-and-sunny',
+          bingbao: 'el-icon-light-rain',
+          yun: 'el-icon-cloudy',
+          yu: 'el-icon-heavy-rain',
+          yin: 'el-icon-partly-cloudy',
+          qing: 'el-icon-sunny'
+        }
+        this.tem_day = tem_day;
+        this.tem_night = tem_night;
+        this.wea = wea;
+        this.wea_img = weaImgs[wea_img]; //使用[]来获取图标值
+
+
       }).catch((err) => {
         console.log('获取天气信息失败')
       })
@@ -51,6 +72,7 @@ export default {
     getTime() {
       setInterval(() => {
         this.currentTime = formatDate(Date.now())
+
       }, 1000)
     },
 
@@ -86,6 +108,13 @@ export default {
 .el-dropdown-link {
   color: white;
   cursor: pointer;
+}
+/*时间天气样式*/
+.date-weather{
+  float: right;
+  color: #fff;
+  margin-right: 30px;
+  font-size: 12px;
 }
 
 

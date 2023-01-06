@@ -6,7 +6,8 @@
  */
 
 export function formatDate(time){
-    if(time) return '' //如果获取时间为空的话返回一个空串
+
+    if(!time) return '' //如果获取时间为空的话返回一个空串
     let date = new Date(time)
     let year = date.getFullYear() //获取年份
     let month = date.getMonth()+1  //获取月份
@@ -20,5 +21,9 @@ export function formatDate(time){
     minute = minute < 10 ? '0' + minute : minute;
     second = second < 10 ? '0' + second : second;
 
-    return year + '-' + month + '-' + day + " " + hour + ':' + minute + ':' + second;
+    // let dateTime = year + '-' + month + '-' + day + " " + hour + ':' + minute + ':' + second;
+    let dateTime = year + '-' + month + '-' + day + " " + hour + ':' + minute;
+
+    return dateTime
+
 }
