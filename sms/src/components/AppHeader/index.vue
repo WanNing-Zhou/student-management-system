@@ -37,10 +37,11 @@ export default {
     padding: 0 10px 0 40px;
   }
 
-  .title{
+  .company{
     color: white;
     text-decoration: none;
-    text-align: center;
+    /*text-align: center;*/
+    position: absolute;
   }
 
   .el-dropdown{
