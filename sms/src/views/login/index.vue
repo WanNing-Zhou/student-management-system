@@ -20,6 +20,7 @@
 //@/zz/yy相当于src下的zz下的yy
 import memoryUtils from "@/utils/memoryUtils";
 import {login} from '@/api/login'
+import  sotorageUtils from '@/utils/storageUtils'
 export default {
   name: "index.vue",
   data() {
@@ -71,12 +72,14 @@ export default {
           console.log(this.form.username,this.form.password)
           //发送请求
           let result = await login(this.form.username,this.form.password)
-          if (result.status == 0){
+          if (result.status === 0){
             this.$message({
               message:'登录成功',
               type:"success"
             })
-            memoryUtils.user = result.data
+            const user = result.data
+            sotorageUtils.saveUser(user)
+            memoryUtils.user = user
             this.$router.replace("/")
           }
           console.log(result)
