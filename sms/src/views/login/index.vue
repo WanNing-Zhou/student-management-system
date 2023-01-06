@@ -72,12 +72,13 @@ export default {
           console.log(this.form.username,this.form.password)
           //发送请求
           let result = await login(this.form.username,this.form.password)
-          if (result.status === 0){
+          if (result.data.status === 0){
             this.$message({
               message:'登录成功',
               type:"success"
             })
-            const user = result.data
+            const user = result.data.data
+            console.log('将信息存储到本地')
             sotorageUtils.saveUser(user)
             memoryUtils.user = user
             this.$router.replace("/")
