@@ -1,15 +1,25 @@
 <template>
   <div>
-    <div class="header">header</div>
-    <div class="navbar">navbar</div>
-    <div class="main"></div>
+    <app-header></app-header>
+    <app-navbar></app-navbar>
+    <app-main></app-main>
   </div>
 </template>
 
 <script>
+import AppHeader from '@/components/AppHeader'
+import AppMain from '@/components/AppNavbar'
+import AppNavbar from '@/components/AppMain'
+
+
 //layout是具体的布局
 export default {
-  name: "Layout"
+  name: "Layout",
+  components:{
+    AppHeader,
+    AppNavbar,
+    AppMain,
+  },
 }
 </script>
 
