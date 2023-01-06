@@ -3,20 +3,15 @@ const express = require('express')
 const router = express.Router()
 const UserModel = require('../models/UserModel')
 const md5 = require('blueimp-md5')
+const RoleModel = require('../models/UserModel')
 
-// router.get("/",(req,res)=>{
-//     res.send('测试成功')
-// })
-//
-// router.get("/test",(req,res)=>{
-//     res.send('测试成功')
-// })
+
+
 
 //post请求, 请求地址 '/login'
 router.post('/login', (req, res) => {
     const {username, password} = req.body  //结构赋值获取username 与 password
 
-    console.log(req.body);
     UserModel.findOne({username, password: md5(password)}).then(user => { //根据用户名密码查询用户
         if (user) {//登录成功
             user._doc.role = {
@@ -31,8 +26,16 @@ router.post('/login', (req, res) => {
         console.log('登录异常', error);
         res.send({status: 1, msg: '登录异常'})
     })
+})
 
-
+//获取角色列表
+router.get('/manage/role/list',(req,res)=>{
+    RoleModel.find().then(roles=>{
+        res.send({status:0,data:roles})
+    }).catch(error=>{
+        console.log('获取角色列表异常',error)
+        res.send({status:1,msg:'获取角色列表异常,请稍后重试'})
+    })
 })
 
 
