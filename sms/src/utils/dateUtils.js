@@ -5,7 +5,7 @@
  * @returns {string}
  */
 
-export function  formatDate(time){
+export function formatDate(time){
     if(time) return '' //如果获取时间为空的话返回一个空串
     let date = new Date(time)
     let year = date.getFullYear() //获取年份
