@@ -15,7 +15,7 @@ import AppNavbar from '@/components/AppMain'
 //layout是具体的布局
 export default {
   name: "Layout",
-  components:{
+  components: {
     AppHeader,
     AppNavbar,
     AppMain,
@@ -24,7 +24,7 @@ export default {
 </script>
 
 <style scoped>
-.header{
+.header {
   position: absolute;
   line-height: 50px;
   padding: 0px;
@@ -34,18 +34,19 @@ export default {
   background-color: #2d3a4b;
 }
 
-.navbar{
+.navbar {
   position: absolute;
   width: 230px;
   top: 50px;
   left: 0;
   bottom: 0;
-  overflow-y:auto;
+  overflow-y: auto;
   background-color: #545c64;
 }
-.main{
+
+.main {
   position: absolute;
-  top:50px;
+  top: 50px;
   left: 230px;
   right: 0;
   bottom: 0;
