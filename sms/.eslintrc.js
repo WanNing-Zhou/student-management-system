@@ -15,4 +15,13 @@ module.exports = {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
   },
+
+  presets: [
+      '@vue/cli-plugin-babel/preset',
+      ['@vue/babel-preset-jsx',
+        {
+          'injectH':false
+        }]
+  ]
+
 };
