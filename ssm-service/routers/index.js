@@ -39,6 +39,15 @@ router.get('/manage/role/list',(req,res)=>{
 })
 
 //添加角色
+router.post('/manage/role/add',(req,res)=>{
+    const {name} = req.body
+        RoleModel.create({name}).then(role=>{
+            res.send({status:0,data:role})
+        }).catch(error=>{
+            console.log("添加角色异常")
+            res.send({status:1,msg:'添加角色异常,请稍后再试'})
+        })
+})
 
 
 

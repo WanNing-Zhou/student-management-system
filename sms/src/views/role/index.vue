@@ -23,7 +23,7 @@
           width="180">
       </el-table-column>
       <el-table-column
-          property="creat_time"
+          property="create_time"
           label="创建时间">
       </el-table-column>
       <el-table-column
@@ -36,10 +36,11 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog title="收货地址" :visible.sync="dialogFormVisible" width="500px">
-      <el-form :model="role" ref="roleForm" label-width="100px" label-position="right" style="width:400px" :rules="rules">
-        <el-form-item label="角色名称" >
-          <el-input v-model="role.name" autocomplete="off"></el-input>
+<!-- 添加角色弹窗   -->
+    <el-dialog title="创建角色" :visible.sync="dialogFormVisible" width="500px">
+      <el-form :model="role" ref="roleForm" label-width="100px" label-position="right" style="width:400px" :rules="roleRules">
+        <el-form-item label="角色名称" prop="name">
+          <el-input v-model="role.name" placeholder="请输入角色名称" ></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -69,6 +70,10 @@ export default {
         name:'',
         menus:[]
       },
+      roleRules:{
+        name:[{required:true,message:'请输入角色名称',trigger:'blur'}],
+        menus:[]
+      },
       rules:{
 
       }
@@ -78,7 +83,7 @@ export default {
     handleAdd(){
       this.dialogFormVisible=true
       this.$nextTick(()=>{ //使用这个方法,会在里面组件所有元素加载完后执行回调中的内容
-        this.$refs['roleForm'].resetFie lds()//弹窗没有加载出来重置的话,会报错 解决办法
+        this.$refs['roleForm'].resetFields()//弹窗没有加载出来重置的话,会报错 解决办法
       })
 
     },
@@ -89,7 +94,7 @@ export default {
       roleApi.getRoleList().then(res=>{
         const resp = res.data
         console.log(resp)
-        if(resp.status==0){
+        if(resp.status===0){
           this.roleList = resp.data
         }
       })
@@ -97,7 +102,17 @@ export default {
     addData(formName){
       this.$refs[formName].validate(valid=>{
         if (valid){
-
+             roleApi.add(this.role.name).then(res=>{
+               const resp = res.data
+               if(resp.status ===0){
+                 this.$message({
+                   type:'success',
+                   message:'添加角色成功',
+                 })
+                 this.dialogFormVisible = false   //添加成功后关闭弹窗
+                 this.fetchData()  //重新获取数据
+               }
+             })
         }else {
           return false
         }

@@ -6,5 +6,15 @@ export  default {
             url:'/manage/role/list',
             method:'get',
         })
+    },
+    add(name){
+        return request({
+            url:'/manage/role/add',
+            method:'post',
+            data:{
+                name
+            }
+        })
     }
+
 }
