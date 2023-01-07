@@ -24,11 +24,15 @@
       </el-table-column>
       <el-table-column
           property="create_time"
-          label="创建时间">
+          label="创建时间"
+          :formatter="resetDate"
+      >
       </el-table-column>
       <el-table-column
           property="auth_time"
-          label="授权时间">
+          label="授权时间"
+          :formatter="resetDate"
+      >
       </el-table-column>
       <el-table-column
           property="auth_name"
@@ -65,7 +69,7 @@
 import roleApi from '@/api/role'
 import Auth from "@/views/role/Auth";
 import memoryUtils from "@/utils/memoryUtils";
-import  dateUtils from "@/utils/dateUtils"
+import  {formatDateNoTime} from "@/utils/dateUtils"
 
 export default {
 
@@ -151,7 +155,16 @@ export default {
           this.fetchData()
         }
       })
+    },
+
+    resetDate(row,column,cellValue,index){//格式化日期数据
+      // console.log("row"+row)
+      // console.log("column"+column)
+      // console.log("cellValue"+cellValue)
+      // console.log("index"+index)
+      return formatDateNoTime(cellValue - 0)
     }
+
   }
 }
 </script>

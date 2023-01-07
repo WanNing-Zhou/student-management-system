@@ -92,7 +92,7 @@ monunted函数也只会执行一次,因为mounted中使用父组件的角色对�
 
     watch:{
       role(val){ //当父组件role发生变化的时候需要改变当前显示的数据
-        if(val){
+        if(val){  //当权限成功修改后,父组件中将取消选中行,数据会为null,也会被监听器监听到,这一步防止空指针错误
           this.updateRole = {...val}
           this.checkedKeys = val.menus
           this.$refs['tree'].setCheckedKeys(this.checkedKeys)
