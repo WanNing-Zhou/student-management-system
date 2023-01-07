@@ -58,7 +58,6 @@
 
         <el-form-item label="角色" prop="role_id">
           <el-select v-model="user.role_id" class="filter-item" placeholder="请点击选择">
-
             <el-option v-for="option in roleOptions" :key="option._id" :label="option.name"
                        :value="option._id"/>
           </el-select>
@@ -136,8 +135,8 @@ export default {
             trigger: ["blur", "change"],
           }
         ],
-        password: [{required: true, message: "密码不能为空", tigger: "blur"}, {
-          min: 3, message: "密码长度需大于等于4", trigger: "blur"
+        password: [{required: true, message: "密码不能为空", trigger: "blur"}, {
+          min: 4, message: "密码长度需大于等于4", trigger: "blur"
         },],
         role_id: [
           {
@@ -196,21 +195,22 @@ export default {
       console.log("删除", _id);
     },
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
       this.pageSize = val
+      this.fetchUsers()
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
-      this.currentPage = val
+      this.fetchUsers()
     },
     fetchUsers() {
       userApi.getUserList(this.currentPage, this.pageSize).then(res => {
         // console.log("res",res)
         const resp = res.data
         if (resp.status === 0) {
-          this.users = resp.data.data
+          this.users = resp.data.data //用户数据
+          this.roleOptions = res.data.roles; //所有角色列表
+          this.total = res.data.total //总条数
         }
-
       }).catch(err => {
 
       })
