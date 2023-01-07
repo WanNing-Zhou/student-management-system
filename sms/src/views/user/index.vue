@@ -9,7 +9,7 @@
       <el-table-column label="用户名" width="180" prop="username"></el-table-column>
       <el-table-column label="姓名" width="180" prop="name"></el-table-column>
       <el-table-column label="电话号码" width="180" prop="phone"></el-table-column>
-      <el-table-column label="创建时间" width="180" prop="create_time"></el-table-column>
+      <el-table-column label="创建时间" width="180" prop="create_time" :formatter="resetDate"></el-table-column>
       <el-table-column label="所属角色" width="180" prop="role_id"></el-table-column>
 
       <el-table-column label="操作">
@@ -78,6 +78,7 @@
 
 <script>
 import userApi from '@/api/user'
+import {formatDateNoTime} from "@/utils/dateUtils";
 
 export default {
   name: "index",
@@ -181,7 +182,13 @@ export default {
     addData(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-
+          userApi.add(this.user).then(res => {
+            const resp = res.data
+            if (resp.status == 0) {
+              this.userFormVisible = false
+              this.fetchUsers()
+            }
+          })
         } else {
           return false
         }
@@ -199,7 +206,7 @@ export default {
       this.fetchUsers()
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      this.currentPage = val
       this.fetchUsers()
     },
     fetchUsers() {
@@ -208,13 +215,18 @@ export default {
         const resp = res.data
         if (resp.status === 0) {
           this.users = resp.data.data //用户数据
-          this.roleOptions = res.data.roles; //所有角色列表
-          this.total = res.data.total //总条数
+          this.roleOptions = resp.data.roles; //所有角色列表
+          this.total = resp.data.total //总条数
+          console.log("roleOptions", this.roleOptions)
         }
       }).catch(err => {
 
       })
+    },
+    resetDate(row, column, cellValue, index) {//格式化日期数据
+      return formatDateNoTime(cellValue - 0)
     }
+
   }
 }
 </script>

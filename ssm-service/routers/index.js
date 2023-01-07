@@ -88,6 +88,46 @@ router.post('/manage/user/list',(req,res)=>{
     })
 })
 
+//添加用户
+router.post('/manage/user/add',(req,res)=>{
+    const {username,password} = req.body
+    UserModel.findOne({username}).then(user=>{
+        if(user){
+            res.send({status:1,msg:'此用户已存在'})
+            return new Promise(()=>{})
+        }else{
+            return UserModel.create({...req.body,password:md5(password)})
+        }
+    }).then(user=>{
+        res.send({status:0,data:user})
+    }).catch(err=>{
+        console.log("添加用户异常",err)
+        res.send({status:1,msg:'添加用户异常'})
+    })
+})
+
+//根据id查询用户
+router.get('/manage/user/find',(req,res)=>{
+    const user = req.query
+    UserModel.findById({_id:user._id}).then(data=>{
+        res.send({status:0,data})
+    }).catch(err=>{
+        console.log("根据id查询用户异常",err)
+        res.send({status:1,msg:"根据id查询用户异常"})
+    })
+})
+
+
+//更新用户数据
+router.post('/manage/user/update',(req,res)=>{
+    const user = req.body
+    UserModel.findOneAndUpdate({_id:user._id},user).then(oldUser=>{
+        res.send({status:0,data:{...oldUser._doc,...user}})     //中间利用es6的合并对象
+    }).catch(error=>{
+        console.log("更新用户异常",error)
+        res.send({status:1,msg:"更新用户异常,请稍后再试"})
+    })
+})
 
 
 module.exports = router

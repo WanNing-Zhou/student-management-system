@@ -19,6 +19,15 @@ export default {
                 size
             }
         })
+    },
+
+    //添加用户
+    add(user){
+        return request({
+            url:'/manage/user/add',
+            method:'post',
+            data:user
+        })
     }
 }
 
