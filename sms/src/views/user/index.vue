@@ -39,7 +39,7 @@
     </el-pagination>
     <!--    添加/编辑 弹窗-->
 
-    <el-dialog title="用户编辑" :visible.sync="userFormVisible" width="500px">
+    <el-dialog :title="user._id === null ? '用户添加': '用户编辑'" :visible.sync="userFormVisible" width="500px">
       <!-- status-icon 当表单校验不通过时.输入框右侧有个x小图标 -->
       <!-- 这里有rules没有写 -->
       <el-form status-icon ref="userForm" :model="user" label-width="100px" lable-position="right"
@@ -48,7 +48,8 @@
           <el-input v-model="user.username" placeholder="请输入用户名"/>
         </el-form-item>
 
-        <el-form-item label="密码" prop="password" v-if="user._id === null ? true : false">
+        <!--        <el-form-item label="密码" prop="password" v-if="user._id === null ? true : false">-->
+        <el-form-item label="密码" prop="password">
           <el-input v-model="user.password" type="password" placeholder="请输入用户名"/>
         </el-form-item>
 
@@ -69,7 +70,8 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="userFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addData('userForm')">确 定</el-button>
+        <el-button type="primary" @click="user._id === null ? addData('userForm') : updateData('userForm')">确 定
+        </el-button>
       </div>
     </el-dialog>
 
@@ -164,7 +166,8 @@ export default {
 
     //打开添加窗口处理
     handleAdd() {
-      this.user = {
+
+      this.user = { //将数据清空,
         _id: null,
         username: "",
         password: "",
@@ -184,7 +187,7 @@ export default {
         if (valid) {
           userApi.add(this.user).then(res => {
             const resp = res.data
-            if (resp.status == 0) {
+            if (resp.status === 0) {
               this.userFormVisible = false
               this.fetchUsers()
             }
@@ -195,8 +198,32 @@ export default {
       })
     },
 
+    //更新用户
+    updateData(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          userApi.update(this.user).then(res => {
+            const resp = res.data
+            if (resp.status === 0) {
+              this.userFormVisible = false
+              this.fetchUsers()
+            }
+          })
+        } else {
+          return false
+        }
+      })
+    },
+
+    //编辑功能
     handleEdit(_id) {
-      console.log("编辑", _id);
+      this.handleAdd() //点击编辑功能时,将用户清空,并打开窗口
+      userApi.getById(_id).then(response => { //发送请求,将组件中的user赋值,方便编辑窗口读取到具体的值
+        const resp = response.data
+        if (resp.status === 0) {
+          this.user = resp.data
+        }
+      })
     },
     handleDelete(_id) {
       console.log("删除", _id);

@@ -28,6 +28,23 @@ export default {
             method:'post',
             data:user
         })
+    },
+
+    //根据id查询用户
+    getById(_id){
+        return request({
+            url:`/manage/user/find?_id=${_id}`,
+            method:'get'
+        })
+    },
+
+    //更新用户数据
+    update(user){
+        return request({
+            url:'/manage/user/update',
+            method:'post',
+            data:user
+        })
     }
 }
 
