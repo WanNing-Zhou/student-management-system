@@ -18,4 +18,32 @@ bodyParser被弃用无法下载,express框架内部已经实现了对post参数�
     app.post('/post',(req,res)=>{
         res.send(req.body)
     })
-###2.角色管理树装控件bug
+###2.角色管理权限设置树状控件bug
+**修复前代**
+    
+    handleCheckChange(data, checked, indeterminate) {
+      //如果选中则添加到menu数组中,如果取消勾选则从数组中删除
+      if (checked) { //如果是选中
+        this.checkedKeys.push(data.index); //将数据保存到checkedKeys中
+      } else {
+        this.checkedKeys.splice(this.checkedKeys.indexOf(data.index), 1)
+      }
+    }
+
+**bug原因:** 学员选权限里由四个子权限, 当点击子权限的时候时首先的checked为false, data.index为/student, 
+ 然后才是采用checked为true表示选中, data.index为/student子选框的值
+在checkedKey中并没有/student元素, 所以checkedKeys.indexOf(data.index)的返回值为-1,使用splice删除
+元素的时候会删除掉末尾的元素,也就是说,当学员内子权限被第一次被选中的时候会将 保存权限数组的最后一条删除,
+
+**修复后:**
+        
+    handleCheckChange(data, checked, indeterminate) {
+      if (checked) { //如果是选中
+        this.checkedKeys.push(data.index); //将数据保存到checkedKeys中
+      } else {
+        let deleteIndex = this.checkedKeys.indexOf(data.index);
+        if(deleteIndex != -1){
+          this.checkedKeys.splice(deleteIndex, 1)
+        }
+      }
+    }
