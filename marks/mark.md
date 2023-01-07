@@ -1,5 +1,5 @@
 ##项目中遇到的问题以及解决
-###1.bodyParser不能用
+###1.bodyParser被弃用(但还是可以用的,这个不是bug,自己开发的时候代码逻辑问题导致bug出现)
 
 body-parser是非常常用的一个express中间件,作用是对post请求进行解析,使用非常简单
     
@@ -19,7 +19,7 @@ bodyParser被弃用无法下载,express框架内部已经实现了对post参数�
         res.send(req.body)
     })
 ###2.角色管理权限设置树状控件bug
-**修复前代**
+**修复前**
     
     handleCheckChange(data, checked, indeterminate) {
       //如果选中则添加到menu数组中,如果取消勾选则从数组中删除
@@ -66,3 +66,35 @@ bodyParser被弃用无法下载,express框架内部已经实现了对post参数�
         }
       }
     }
+
+###3.角色管理修改权限信息显示bug
+
+**修复前**
+  
+    props:['role'],//从父组件那里接收一个角色对象
+    mounted(){
+      this.updateRole={...this.role} //为updateRole赋初始值
+      this.authList = this.getAuthNodes(menuList)
+      this.checkedKeys = this.role.menus  //初识权限列表
+    // console.log('checkedKeys',this.checkedKeys)
+    },
+
+**bug原因**
+
+因为角色管理页面内在权限修改的时候使用了自定义组件Auth,因为只会执行一次,使用
+monunted函数也只会执行一次,因为mounted中使用父组件的角色对象赋值给当前组件的数据赋值
+所以当父组件选中一行时roel发生改变,但是当前组件的数据没有改变
+
+**修复后**
+ 
+为当前组件添加一个监听器来监听父组件中role对象的变化,当role发生变化后,对当前组件的数据进行
+更改
+
+    watch:{
+      role(val){ //当父组件role发生变化的时候需要改变当前显示的数据
+        this.updateRole = {...val}
+        this.checkedKeys = val.menus
+        this.$['tree'].setCheckedKeys(this.checkedKeys)
+      }
+    }
+

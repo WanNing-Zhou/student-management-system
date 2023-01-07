@@ -6,6 +6,7 @@
       </el-form-item>
     </el-form>
     <el-tree
+        ref="tree"
         :data="authList"
         show-checkbox
         node-key="index"
@@ -41,7 +42,7 @@ export default {
     this.updateRole={...this.role} //为updateRole赋初始值
     this.authList = this.getAuthNodes(menuList)
     this.checkedKeys = this.role.menus  //初识权限列表
-    console.log('checkedKeys',this.checkedKeys)
+    // console.log('checkedKeys',this.checkedKeys)
   },
 
   methods:{
@@ -86,6 +87,13 @@ export default {
         }
       }
       // console.log("checkedKeys",this.checkedKeys)
+    }
+  },
+  watch:{
+    role(val){ //当父组件role发生变化的时候需要改变当前显示的数据
+      this.updateRole = {...val}
+      this.checkedKeys = val.menus
+      this.$['tree'].setCheckedKeys(this.checkedKeys)
     }
   }
 }
