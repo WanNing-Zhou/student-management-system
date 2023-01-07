@@ -3,7 +3,7 @@
   <div>
     <div class="btn_box" style="margin:20px 0">
         <el-button type="primary" @click="handleAdd">创建角色</el-button>
-        <el-button type="primary" disabled>设置角色权限</el-button>
+        <el-button type="primary" @click="" :disabled="!currentRow ? true : false" @click="roleAuthVisible=true" >设置角色权限</el-button>
     </div>
     <el-table
         highlight-current-row
@@ -37,7 +37,7 @@
     </el-table>
 
 <!-- 添加角色弹窗   -->
-    <el-dialog title="创建角色" :visible.sync="dialogFormVisible" width="500px">
+    <el-dialog title="添加角色" :visible.sync="dialogFormVisible" width="500px">
       <el-form :model="role" ref="roleForm" label-width="100px" label-position="right" style="width:400px" :rules="roleRules">
         <el-form-item label="角色名称" prop="name">
           <el-input v-model="role.name" placeholder="请输入角色名称" ></el-input>
@@ -49,16 +49,28 @@
       </div>
     </el-dialog>
 
+    <!-- 设置角色权限痰喘   -->
+    <el-dialog title="设置角色权限" :visible.sync="roleAuthVisible" width="500px">
+     <Auth :role="currentRow"/>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="roleAuthVisible = false">取 消</el-button>
+        <el-button type="primary" @click="updateRole('roleForm')">确 定</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
 import roleApi from '@/api/role'
+import Auth from "@/views/role/Auth";
 export default {
 
+  components:{
+    Auth
+  },
   mounted() {
     this.fetchData()
-    console.log(this.roleList)
   },
   name: "index",
   data(){
@@ -66,6 +78,7 @@ export default {
       currentRow: null,//选中的行
       roleList:[],
       dialogFormVisible: false,
+      roleAuthVisible:false,
       role:{
         name:'',
         menus:[]
@@ -87,13 +100,12 @@ export default {
       })
 
     },
-    handleCurrentChange(val){
+    handleCurrentChange(val){ //更新选中的行
       this.currentRow = val
     },
     fetchData(){
       roleApi.getRoleList().then(res=>{
         const resp = res.data
-        console.log(resp)
         if(resp.status===0){
           this.roleList = resp.data
         }
@@ -113,6 +125,26 @@ export default {
                  this.fetchData()  //重新获取数据
                }
              })
+        }else {
+          return false
+        }
+      })
+    },
+
+    updateRole(formName){ //更新角色 /为角色设置权限
+      this.$refs[formName].validate(valid=>{
+        if (valid){
+          roleApi.add(this.role.name).then(res=>{
+            const resp = res.data
+            if(resp.status ===0){
+              this.$message({
+                type:'success',
+                message:'添加角色成功',
+              })
+              this.dialogFormVisible = false   //添加成功后关闭弹窗
+              this.fetchData()  //重新获取数据
+            }
+          })
         }else {
           return false
         }
