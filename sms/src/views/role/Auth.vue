@@ -72,20 +72,20 @@ export default {
     //树形控件节点点击回调
     //data:当前点击节点数据,checked:当前节点是否选中,indeterminate:当前节点中的子节点是否有选中状态
     handleCheckChange(data, checked, indeterminate) {
-      console.log("checked",checked);
-      console.log("data",data)
+      // console.log("checked",checked);
+      // console.log("data",data)
       //如果选中则添加到menu数组中,如果取消勾选则从数组中删除
       if (checked) { //如果是选中
         this.checkedKeys.push(data.index); //将数据保存到checkedKeys中
-        // let set = new Set(this.checkedKeys); //去重
-        // this.checkedKeys = Array.from(set);
+        let set = new Set(this.checkedKeys); //去重
+        this.checkedKeys = Array.from(set);
       } else {
         let deleteIndex = this.checkedKeys.indexOf(data.index);
         if(deleteIndex !== -1){ //当删除的的权限,在权限数组中存在的时候才去删除
           this.checkedKeys.splice(deleteIndex, 1)
         }
       }
-      console.log("checkedKeys",this.checkedKeys)
+      // console.log("checkedKeys",this.checkedKeys)
     }
   }
 }

@@ -47,3 +47,22 @@ bodyParser被弃用无法下载,express框架内部已经实现了对post参数�
         }
       }
     }
+
+**bug原因** 角色权限的添加可能会出现角色权限重复的现象,将用户权限取消后,用户权限依然存在,
+可以在前端对权限进行去重,
+
+**修复后**
+
+     handleCheckChange(data, checked, indeterminate) {
+      //如果选中则添加到menu数组中,如果取消勾选则从数组中删除
+      if (checked) { //如果是选中
+        this.checkedKeys.push(data.index); //将数据保存到checkedKeys中
+        let set = new Set(this.checkedKeys); //去重
+        this.checkedKeys = Array.from(set);
+      } else {
+        let deleteIndex = this.checkedKeys.indexOf(data.index);
+        if(deleteIndex !== -1){ //当删除的的权限,在权限数组中存在的时候才去删除
+          this.checkedKeys.splice(deleteIndex, 1)
+        }
+      }
+    }
