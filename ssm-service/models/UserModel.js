@@ -4,6 +4,7 @@ const md5 = require('blueimp-md5')
 //为添加进数据库的数据添加规则
 const userSchema = new mongoose.Schema({
     username:{type:String,required:true},
+    name:{type:String,required:true},
     password:{type:String,required:true},
     phone:String,
     create_time:{type:Number, default:Date.now()},

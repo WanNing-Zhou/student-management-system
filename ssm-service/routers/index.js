@@ -62,5 +62,34 @@ router.post('/manage/role/update',(req,res)=>{
 })
 
 
+//获取所有用户
+router.get('/manage/user/all',(req,res)=>{
+    UserModel.find({username:{'$ne':'admin'}}).then(users=>{ //在数据库中查询所有非admin用户
+        res.send({status:0,data:users})
+    }).catch(error=>{
+        console.log("获取所有用户异常",error)
+        res.send({status:1,msg:'获取所有用户异常'})
+    })
+})
+
+//获取用户列表(分页)
+router.post('/manage/user/list',(req,res)=>{
+    let page = req.body.page || 1
+    let size = req.body.size || 5
+    UserModel.find({username:{'$ne':'admin'}}).then(users=>{ //在数据库中查询所有非admin用户
+        let count = users.length
+        UserModel.find({username:{'$ne':'admin'}}).skip((page-1)*parseInt(size)).limit(parseInt(size)).exec((err,data)=>{
+            RoleModel.find().then(roles=>{
+                res.send({status:0,data:{tatal:count,data,roles}})
+            })
+            //exec会在前面所有执行完后执行回调函数
+        })
+    }).catch(error=>{
+        console.log("获取用户列表异常",error)
+        res.send({status:1,msg:'获取所有用户异常'})
+    })
+})
+
+
 
 module.exports = router
