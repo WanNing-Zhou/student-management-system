@@ -49,6 +49,18 @@ router.post('/manage/role/add',(req,res)=>{
         })
 })
 
+//更新角色(设置权限)
+router.post('/manage/role/update',(req,res)=>{
+    const role = req.body
+    role.auth_time = Date.now()
+    RoleModel.findOneAndUpdate({_id:role._id},role).then(oldRole=>{
+        res.send({status:0,data:{...oldRole._doc,...role}})     //中间利用es6的合并对象
+    }).catch(error=>{
+        console.log("更新角色异常",error)
+        res.send({status:1,msg:"更新角色异常,请稍后再试"})
+    })
+})
+
 
 
 module.exports = router

@@ -15,6 +15,12 @@ export  default {
                 name
             }
         })
+    },
+    updateRole(role){
+        return request({
+            url:'/manage/role/update',
+            method:'post',
+            data: role
+        })
     }
-
 }

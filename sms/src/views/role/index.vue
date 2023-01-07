@@ -64,6 +64,7 @@
 <script>
 import roleApi from '@/api/role'
 import Auth from "@/views/role/Auth";
+import memoryUtils from "@/utils/memoryUtils";
 export default {
 
   components:{
@@ -136,6 +137,18 @@ export default {
       const newRole = this.$refs['auth'].getMenus()
       this.currentRow.menus = newRole.menus
       this.currentRow.name = newRole.name
+      this.currentRow.auth_name(memoryUtils.user.username)
+      roleApi.updateRole(this.currentRow).then(res=>{
+        const resp = res.data;
+        if(resp.status === 0){
+          this.$message({
+            type:'success',
+            message:'设置成功'
+          })
+          this.roleAuthVisible = false
+          this.fetchData()
+        }
+      })
     }
   }
 }

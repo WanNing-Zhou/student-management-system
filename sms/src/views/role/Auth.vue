@@ -10,8 +10,7 @@
         show-checkbox
         node-key="index"
         :default-expand-all="true"
-        :default-expanded-keys="checkedKeys"
-        :default-checked-keys="[5]"
+        :default-checked-keys="checkedKeys"
         @check-change="handleCheckChange"
     >
     </el-tree>
@@ -37,11 +36,14 @@ export default {
     }
   },
   props:['role'],//从父组件那里接收一个角色对象
+
   mounted(){
     this.updateRole={...this.role} //为updateRole赋初始值
     this.authList = this.getAuthNodes(menuList)
     this.checkedKeys = this.role.menus  //初识权限列表
+    console.log('checkedKeys',this.checkedKeys)
   },
+
   methods:{
 
     //为负组件提供最新角色数据
@@ -75,11 +77,11 @@ export default {
       //如果选中则添加到menu数组中,如果取消勾选则从数组中删除
       if (checked) { //如果是选中
         this.checkedKeys.push(data.index); //将数据保存到checkedKeys中
-        // let set = new Set(this.checkedKeys);
+        // let set = new Set(this.checkedKeys); //去重
         // this.checkedKeys = Array.from(set);
       } else {
         let deleteIndex = this.checkedKeys.indexOf(data.index);
-        if(deleteIndex != -1){ //当删除的的权限,在权限数组中存在的时候才去删除
+        if(deleteIndex !== -1){ //当删除的的权限,在权限数组中存在的时候才去删除
           this.checkedKeys.splice(deleteIndex, 1)
         }
       }
