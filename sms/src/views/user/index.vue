@@ -70,11 +70,12 @@ export default {
     },
     fetchUser(){
       userApi.getUserList(this.currentPage,this.pageSize).then(res=>{
+        // console.log("res",res)
         const resp = res.data
-        if(resp.data==0){
-          this.users = resp.data
+        if(resp.status===0){
+          this.users = resp.data.data
         }
-        // console.log("users:"+this.users)
+
       }).catch(err=>{
 
       })
