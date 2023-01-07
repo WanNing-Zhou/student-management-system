@@ -18,7 +18,7 @@ const UserModel = mongoose.model('users',userSchema);
 UserModel.findOne({username:'admin'}).then(user=>{
     //如果没有查询到超级管理员,就自动分配一个超级管理员身份
     if(!user){
-        UserModel.create({username:'admin',password:md5('admin')}).then(user=>{
+        UserModel.create({username:'admin',name:'admin',password:md5('admin')}).then(user=>{
             console.log('初始化用户: 用户名: admin 密码: admin')
         })
     }

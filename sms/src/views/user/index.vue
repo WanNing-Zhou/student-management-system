@@ -38,37 +38,20 @@
 </template>
 
 <script>
+import userApi from '@/api/user'
 export default {
   name: "index",
   data(){
     return{
-      users:[
-        {
-          "_id": "61516dc010fc422ded0eb207",
-          "username": "jingjing",
-          "name": "代静",
-          "password": "827ccb0eea8a706c4c34a16891f84e7b",
-          "phone": "13133333333",
-          "role_id": "614441a3a8edad019bb0e114",
-          "create_time": 1632726464736,
-          "__v": 0
-        },
-        {
-          "_id": "6151705a10fc422ded0eb213",
-          "username": "renlong",
-          "name": "任龙",
-          "password": "81dc9bdb52d04dc20036dbd8313ed055",
-          "phone": "13112345678",
-          "role_id": "614442c3a8edad019bb0e134",
-          "create_time": 1632727130430,
-          "__v": 0
-        }
-      ],
+      users:[],
       currentPage:1,//当前显示第多少页
       pageSize:5,//一页显示多少数据
       total:0,//总数据条数
     }
+  },
 
+  mounted() {
+      this.fetchUser()
   },
   methods: {
     handleEdit(_id) {
@@ -84,6 +67,17 @@ export default {
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
       this.currentPage=val
+    },
+    fetchUser(){
+      userApi.getUserList(this.currentPage,this.pageSize).then(res=>{
+        const resp = res.data
+        if(resp.data==0){
+          this.users = resp.data
+        }
+        // console.log("users:"+this.users)
+      }).catch(err=>{
+
+      })
     }
   }
 }

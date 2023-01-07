@@ -6,8 +6,6 @@ const md5 = require('blueimp-md5')
 const RoleModel = require('../models/RoleModel')
 
 
-
-
 //post请求, 请求地址 '/login'
 router.post('/login', (req, res) => {
     const {username, password} = req.body  //结构赋值获取username 与 password
