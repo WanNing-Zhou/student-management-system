@@ -10,7 +10,7 @@
       <el-table-column label="姓名" width="180" prop="name"></el-table-column>
       <el-table-column label="电话号码" width="180" prop="phone"></el-table-column>
       <el-table-column label="创建时间" width="180" prop="create_time" :formatter="resetDate"></el-table-column>
-      <el-table-column label="所属角色" width="180" prop="role_id"></el-table-column>
+      <el-table-column label="所属角色" width="180" prop="role_id" :formatter="formatRole"></el-table-column>
 
       <el-table-column label="操作">
         <template slot-scope="scope">
@@ -241,8 +241,7 @@ export default {
             this.$message({
               type: "success",
               message: "删除用用户成功"
-            });
-
+            })
             //更新总页数
             this.totalPage = (this.total - 1) / this.pageSize;
             //删除成功,刷新列表
@@ -263,6 +262,10 @@ export default {
       this.fetchUsers();
     },
     fetchUsers() {
+      if(this.currentPage > Math.ceil(this.totalPage)){
+        this.currentPage = Math.ceil(this.totalPage)
+      }
+
       userApi.getUserList(this.currentPage, this.pageSize).then(res => {
         // console.log("res",res)
         const resp = res.data
@@ -280,6 +283,10 @@ export default {
 
     resetDate(row, column, cellValue, index) {//格式化日期数据
       return formatDateNoTime(cellValue - 0)
+    },
+    formatRole(row, column, cellValue, index){
+      // this.roleOptions.find(item=>item._id===cellValue)
+      return this.roleOptions.filter((item,index,arr)=>item._id===cellValue)[0].name; //filter返回一个数组
     }
 
   }
