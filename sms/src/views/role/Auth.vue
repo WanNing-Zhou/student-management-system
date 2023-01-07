@@ -93,7 +93,7 @@ export default {
     role(val){ //当父组件role发生变化的时候需要改变当前显示的数据
       this.updateRole = {...val}
       this.checkedKeys = val.menus
-      this.$['tree'].setCheckedKeys(this.checkedKeys)
+      this.$refs['tree'].setCheckedKeys(this.checkedKeys)
     }
   }
 }

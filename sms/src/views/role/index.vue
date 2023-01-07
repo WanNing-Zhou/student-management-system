@@ -137,7 +137,7 @@ export default {
       const newRole = this.$refs['auth'].getMenus()
       this.currentRow.menus = newRole.menus
       this.currentRow.name = newRole.name
-      this.currentRow.auth_name(memoryUtils.user.username)
+      this.currentRow.auth_name=memoryUtils.user.username
       roleApi.updateRole(this.currentRow).then(res=>{
         const resp = res.data;
         if(resp.status === 0){
