@@ -3,7 +3,7 @@ const express = require('express')
 const router = express.Router()
 const UserModel = require('../models/UserModel')
 const md5 = require('blueimp-md5')
-const RoleModel = require('../models/UserModel')
+const RoleModel = require('../models/RoleModel')
 
 
 
@@ -37,6 +37,9 @@ router.get('/manage/role/list',(req,res)=>{
         res.send({status:1,msg:'获取角色列表异常,请稍后重试'})
     })
 })
+
+//添加角色
+
 
 
 module.exports = router
