@@ -45,7 +45,19 @@ export default {
             method:'post',
             data:user
         })
-    }
+    },
+
+    //删除角色
+    deleteById(userId) {
+        return request({
+            url: '/manage/user/delete', //后端请求地址
+            method: 'post', //请求方式
+            data: {
+                userId
+            }
+        })
+    },
+
 }
 
 

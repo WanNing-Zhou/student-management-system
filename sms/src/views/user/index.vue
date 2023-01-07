@@ -4,7 +4,7 @@
       <el-button margin-bottom="20px" type="primary" @click="handleAdd">新增用户</el-button>
     </div>
 
-    <el-table :data="users" style="width: 100%" height="380" border>
+    <el-table :data="users" style="width: 100%" height="580" border>
       <el-table-column label="序号" width="60" type="index"></el-table-column>
       <el-table-column label="用户名" width="180" prop="username"></el-table-column>
       <el-table-column label="姓名" width="180" prop="name"></el-table-column>
@@ -32,10 +32,11 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="currentPage"
-        :page-sizes="[5, 10, 15, 20]"
+        :page-sizes="[5, 10, 20, 50]"
         :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total">
+        layout="total,sizes,prev,pager,next,jumper"
+        :total="total"
+    >
     </el-pagination>
     <!--    添加/编辑 弹窗-->
 
@@ -121,6 +122,7 @@ export default {
       currentPage: 1,//当前显示第多少页
       pageSize: 5,//一页显示多少数据
       total: 0,//总数据条数
+      totalPage: 0,
       user: {
         _id: null,
         username: '',
@@ -226,15 +228,39 @@ export default {
       })
     },
     handleDelete(_id) {
-      console.log("删除", _id);
+      this.$confirm("确认删除这条记录吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        //确认
+        userApi.deleteById(_id).then((response) => {
+          const resp = response.data;
+          if (resp.status === 0) {
+            //提示信息
+            this.$message({
+              type: "success",
+              message: "删除用用户成功"
+            });
+
+            //更新总页数
+            this.totalPage = (this.total - 1) / this.pageSize;
+            //删除成功,刷新列表
+            this.fetchUsers();
+          }
+        })
+      }).catch(() => {
+        //取消删除,不理会
+      })
     },
     handleSizeChange(val) {
-      this.pageSize = val
-      this.fetchUsers()
+      this.pageSize = val;
+      this.fetchUsers();
+
     },
     handleCurrentChange(val) {
-      this.currentPage = val
-      this.fetchUsers()
+      this.currentPage = val;
+      this.fetchUsers();
     },
     fetchUsers() {
       userApi.getUserList(this.currentPage, this.pageSize).then(res => {
@@ -244,12 +270,14 @@ export default {
           this.users = resp.data.data //用户数据
           this.roleOptions = resp.data.roles; //所有角色列表
           this.total = resp.data.total //总条数
-          console.log("roleOptions", this.roleOptions)
+          this.totalPage = this.total / this.pageSize; //总页数
+          // console.log("roleOptions", this.roleOptions)
         }
       }).catch(err => {
 
       })
     },
+
     resetDate(row, column, cellValue, index) {//格式化日期数据
       return formatDateNoTime(cellValue - 0)
     }
