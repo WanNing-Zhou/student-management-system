@@ -1,5 +1,5 @@
 <template>
-
+<!--角色管理的里面会有一个bug-->
   <div>
     <div class="btn_box" style="margin:20px 0">
         <el-button type="primary" @click="handleAdd">创建角色</el-button>
@@ -51,10 +51,10 @@
 
     <!-- 设置角色权限痰喘   -->
     <el-dialog title="设置角色权限" :visible.sync="roleAuthVisible" width="500px">
-     <Auth :role="currentRow"/>
+     <Auth :role="currentRow" ref="auth"/>
       <div slot="footer" class="dialog-footer">
         <el-button @click="roleAuthVisible = false">取 消</el-button>
-        <el-button type="primary" @click="updateRole('roleForm')">确 定</el-button>
+        <el-button type="primary" @click="updateRole">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -131,24 +131,8 @@ export default {
       })
     },
 
-    updateRole(formName){ //更新角色 /为角色设置权限
-      this.$refs[formName].validate(valid=>{
-        if (valid){
-          roleApi.add(this.role.name).then(res=>{
-            const resp = res.data
-            if(resp.status ===0){
-              this.$message({
-                type:'success',
-                message:'添加角色成功',
-              })
-              this.dialogFormVisible = false   //添加成功后关闭弹窗
-              this.fetchData()  //重新获取数据
-            }
-          })
-        }else {
-          return false
-        }
-      })
+    updateRole(){ //更新角色 /为角色设置权限
+      console.log(this.$refs['auth'].getMenus())
     }
   }
 }
