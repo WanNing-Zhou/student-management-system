@@ -4,6 +4,8 @@ const router = express.Router()
 const UserModel = require('../models/UserModel')
 const md5 = require('blueimp-md5')
 const RoleModel = require('../models/RoleModel')
+const SchoolModel = require('../models/SchoolModel')
+
 
 
 //post请求, 请求地址 '/login'
@@ -12,12 +14,12 @@ router.post('/login', (req, res) => {
 
     UserModel.findOne({username, password: md5(password)}).then(user => { //根据用户名密码查询用户
         if (user) {//登录成功
-            if(user.role_id){ //如果角色id存在
-                RoleModel.findOne({username,password:md5(password)}).then(role=>{
+            if (user.role_id) { //如果角色id存在
+                RoleModel.findOne({username, password: md5(password)}).then(role => {
                     user._doc.role = role
-                    res.send({status:0,data:user}) //将角色id返回
+                    res.send({status: 0, data: user}) //将角色id返回
                 })
-            }else{ //这个是超级管理员的情况
+            } else { //这个是超级管理员的情况
                 user._doc.role = {menus: []}
                 res.send({status: 0, data: user})
             }
@@ -139,19 +141,19 @@ router.post('/manage/user/update', (req, res) => {
 })
 
 //删除用户
-router.post('/manage/user/delete',(req,res)=>{
+router.post('/manage/user/delete', (req, res) => {
     const {userId} = req.body;
-    UserModel.deleteOne({_id:userId}).then(data=>{
-        res.send({status:0})
+    UserModel.deleteOne({_id: userId}).then(data => {
+        res.send({status: 0})
     })
 })
 
 
 //获取权限列表
-router.post('/menus',(req,res)=>{
+router.post('/menus', (req, res) => {
     const {roleId} = req.body
-    RoleModel.findOne({_id:roleId}).then(role=>{
-        res.send({status:0,data:{menus:role.menus}})
+    RoleModel.findOne({_id: roleId}).then(role => {
+        res.send({status: 0, data: {menus: role.menus}})
     }).catch(error => {
         console.log("更新用户异常", error)
         res.send({status: 1, msg: "获取权限列表异常,请稍后再试"})
@@ -159,6 +161,148 @@ router.post('/menus',(req,res)=>{
 })
 
 
+//获取学校列表
+router.post('/manage/school/list', (req, res) => {
+    let page = req.body.page || 1;
+    let size = req.body.size || 5;
+    SchoolModel.find({}).then(schools => {
+        let count = schools.length
+        SchoolModel.find().skip((page - 1) * parseInt(size)).limit(parseInt(size)).exec((err, data) => {
+            SchoolModel.find().then(roles => {
+                res.send({
+                    status: 0,
+                    data: {
+                        total: count,
+                        data,
+                        roles
+                    }
+                })
+            })
+        })
+    }).catch(error => {
+        console.error('获取学校列表异常', error);
+        res.send({
+            status: 1,
+            msg: '获取学校列表异常,请稍后再试！'
+        })
+    })
+})
+
+router.get('/manage/school/all', (req, res) => {
+    SchoolModel.find().then(schools => {
+        res.send({
+            status: 0,
+            data: schools
+        })
+    }).catch(error => {
+        console.error("获得所有学校异常", error);
+        res.send({
+            status: 1,
+            msg: "获取所有学校异常,请稍后再试"
+        })
+    })
+})
+
+
+router.post('/manage/school/add', (req, res) => {
+    //读取请求参数数据
+    const {
+        schoolname
+    } = req.body;
+    //处理:判断用户是否已经存在,如果存在返回错误信息,如果不存在保存
+    //查询(根据username)
+    SchoolModel.findOne({
+        schoolname
+    }).then(school => {
+        if (school) {
+            res.send({
+                status: 1,
+                msg: '此学校已存在'
+            });
+            return new Promise(() => {
+            })
+        } else {
+            //没值(不存在)
+            //保存
+            return SchoolModel.create({
+                ...req.body,
+            });
+        }
+    }).then(school => {
+        //返回包含user的json数据
+        res.send({
+            status: 0,
+            data: school
+        })
+    }).catch(error => {
+        console.error('添加学校异常', error);
+        res.send({
+            status: 1,
+            msg: '添加学校异常,请重新尝试'
+        });
+    })
+})
+
+
+//id查询数学校
+router.get('/manage/school/find', (req, res) => {
+    const school = req.query;
+    SchoolModel.findById({
+        _id: school._id
+    }).then(data => {
+        res.send({
+            status: 0,
+            data
+        })
+    }).catch(error => {
+        console.error('根据id查询学校异常', error);
+        res.send({
+            status: 1,
+            msg: '根据id查询学校异常,请重新尝试'
+        })
+    })
+})
+
+//提交修改数据接口
+//更新学校
+router.post('/manage/school/update', (req, res) => {
+    const school = req.body
+    SchoolModel.findOneAndUpdate({
+        _id: school._id
+    }, school).then(oldSchool => {
+        const data = Object.assign(oldSchool, school)
+        res.send({
+            status: 0,
+            data
+        })
+    }).catch(error => {
+        console.error('更新学校异常', error);
+        res.send({
+            status: 1,
+            msg: '更新学校异常,请稍后再试！'
+        })
+    })
+})
+
+//删除学校
+router.post('/manage/school/delete', (req, res) => {
+    const {
+        schoolId
+    } = req.body;
+    SchoolModel.deleteOne({
+        _id: schoolId
+    }).then(doc => {
+        res.send({
+            status: 0
+        })
+    }).catch(error => {
+        console.error('删除学校信息异常', error);
+        res.send({
+            status: 1,
+            msg: '删除学校信息异常,请重新尝试'
+        })
+    })
+})
 
 
 module.exports = router
