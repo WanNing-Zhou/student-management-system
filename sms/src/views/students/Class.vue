@@ -106,8 +106,8 @@ export default {
   data() {
     return {
       roles:[],//用来存储角色
-      teacher_id:'',
-      manager_id:'',
+      teacherId:'',
+      managerId:'',
       classs: [],
       total: 0,//总记录数
       totalPage: 1,
@@ -116,7 +116,7 @@ export default {
       updateClass: {
         _id: null,
         name: "",
-        teacer_id: '',
+        teacher_id: '',
         manager_id: '',
         state: "",
       },
@@ -168,9 +168,9 @@ export default {
         const resp = response.data
         resp.data.forEach(item=>{
           if(item.name==="教师")
-            this.teacher_id = item._id
+            this.teacherId = item._id
           if (item.name==="学管")
-            this.manager_id = item._id
+            this.managerId = item._id
         })
 
       })
@@ -270,7 +270,6 @@ export default {
         this.currentPage = Math.ceil(this.totalPage)
       }
       this.getAllRole();
-      this.getUserList();
       classsApi.getClassList(this.currentPage, this.pageSize, this.searchMap).then(response => {
         const res = response.data
 
@@ -280,7 +279,7 @@ export default {
           this.totalPage = this.total / this.pageSize
         }
       })
-      console.log('s', this.searchMap);
+      // console.log('s', this.searchMap);
     },
     //获取所有用户列表
     getUserList() {
@@ -290,9 +289,9 @@ export default {
         if (res.status === 0) {
           this.userAll = res.data;
           this.userAll.map(item => {
-            if (item.role_id === this.teacher_id) { //判断是否时教师
+            if (item.role_id === this.teacherId) { //判断是否时教师
               this.teacherOptions.push(item);
-            } else if (item.role_id === this.manager_id) { //判断是否是学管
+            } else if (item.role_id === this.managerId) { //判断是否是学管
               this.managerOptions.push(item);
             }
           })
@@ -316,7 +315,6 @@ export default {
       this.$refs[fromName].validate((valid) => {
         if (valid) {
           //验证通过,提交添加
-          alert('add submit');
           classsApi.add(this.updateClass).then(response => {
             const res = response.data;
             if (res.status === 0) {
