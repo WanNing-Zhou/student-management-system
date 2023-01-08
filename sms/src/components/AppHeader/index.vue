@@ -10,7 +10,7 @@
             </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item command="a" icon="el-icon-edit">修改密码</el-dropdown-item>
-        <el-dropdown-item command="b" icon="el-icon-lollipop">退出系统</el-dropdown-item>
+        <el-dropdown-item command="b" icon="el-icon-lollipop" @click="handleLogout">退出系统</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
     <span class="date-weather">
@@ -78,6 +78,11 @@ export default {
         this.currentTime = formatDate(Date.now())
 
       }, 1000)
+    },
+    handleLogout() { //退出功能
+      memoryUtils.user = {};
+      storageUtils.removeUser();
+      this.$router.replace("/login");
     },
 
   }, mounted() {
