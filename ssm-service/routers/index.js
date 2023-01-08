@@ -7,6 +7,7 @@ const md5 = require('blueimp-md5')
 const RoleModel = require('../models/RoleModel')
 const SchoolModel = require('../models/SchoolModel')
 const MajorModel = require('../models/MajorModel')
+const ClassModel = require('../models/ClassModel')
 
 
 
@@ -452,6 +453,135 @@ router.post('/manage/major/update', (req, res) => {
         })
     })
 })
+
+
+//获取班级信息
+router.post('/manage/class/list',(req,res)=>{
+    let page = req.body.page || 1
+    let size = req.body.size || 5
+    let serachMap =  req.body.searchMap || {}
+    let obj = {}
+    //如果serachMap.teacher_id有值就会俄日obj['teacher_id']赋值,如果没有,obj就为空
+    serachMap.teacher_id ? obj['teacher_id'] = searchMap.teacher_id : obj
+    serachMap.manager_id ? obj['manager_io'] = searchMap.manager_id : obj
+    let a;
+    let b;
+    ClassModel.find(obj).then(classs=>{
+        let count = classs.length
+        ClassModel.find(obj).skip((page-1)*parseInt(size)).limit(parseInt(size)).exec((err,data)=>{
+            res.send({status:0,data:{total:count,data}})
+        })
+    }).catch(error => {
+        console.error('获取班级列表异常', error);
+        res.send({
+            status: 1,
+            msg: '获取班级列表异常,请稍后再试！'
+        })
+    })
+
+})
+
+//添加班级
+router.post('/manage/class/add', (req, res) => {
+    //读取请求参数数据
+    const {
+        name
+    } = req.body;
+    // console.log(name);
+    //处理:判断用户是否已经存在,如果存在返回错误信息,如果不存在保存
+    //查询(根据username)
+    ClassModel.findOne({
+        name
+    }).then(data => {
+        if (data) {
+            res.send({
+                status: 1,
+                msg: '此班级已存在'
+            });
+            return new Promise(() => {})
+        } else {
+            //没值(不存在)
+            //保存
+            return ClassModel.create({
+                ...req.body,
+            });
+        }
+    }).then(data => {
+        //返回包含user的json数据
+        res.send({
+            status: 0,
+            data: data
+        })
+    }).catch(error => {
+        console.error('添加班级异常', error);
+        res.send({
+            status: 1,
+            msg: '添加班级异常,请重新尝试'
+        });
+    })
+})
+
+
+//id查询班级
+router.get('/manage/class/find', (req, res) => {
+    const c = req.query;
+    ClassModel.findById({
+        _id: c._id
+    }).then(data => {
+        res.send({
+            status: 0,
+            data
+        })
+    }).catch(error => {
+        console.error('根据id查询班级异常', error);
+        res.send({
+            status: 1,
+            msg: '根据id查询班级异常,请重新尝试'
+        })
+    })
+})
+
+//提交修改数据接口
+//更新班级
+router.post('/manage/class/update', (req, res) => {
+    const c = req.body
+    ClassModel.findOneAndUpdate({
+        _id: c._id
+    }, c).then(oldclass => {
+        const data = Object.assign(oldclass, c)
+        res.send({
+            status: 0,
+            data
+        })
+    }).catch(error => {
+        console.error('更新班级异常', error);
+        res.send({
+            status: 1,
+            msg: '更新班级异常,请稍后再试！'
+        })
+    })
+})
+
+//删除班级
+router.post('/manage/class/delete', (req, res) => {
+    const {
+        classId
+    } = req.body;
+    ClassModel.deleteOne({
+        _id: classId
+    }).then(doc => {
+        res.send({
+            status: 0
+        })
+    }).catch(error => {
+        console.error('删除班级信息异常', error);
+        res.send({
+            status: 1,
+            msg: '删除班级信息异常,请重新尝试'
+        })
+    })
+})
+
 
 
 
