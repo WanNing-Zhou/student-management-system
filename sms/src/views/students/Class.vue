@@ -178,12 +178,16 @@ export default {
 
 
     searchData() {
+      if(this.search.teacher===''&&this.search.manager===''){ //如果查询条件为空的话返回全部
+        this.fetchClasss(); //这个方法会发送请求,携带searchMap作为请求体
+        return
+      }
       this.currentPage = 1;
       const resTeacher = this.userAll.find(item => item.name === this.search.teacher) || {}; //根据姓名找到教师对象
-      const resManager = this.userAll.find(item => item.name === this.search.manager) || {};//个面具姓名找到学管对象
+      const resManager = this.userAll.find(item => item.name === this.search.manager) || {};//根据姓名找到学管对象
       this.searchMap.teacher_id = resTeacher._id || "null"; //获取id如果不存在,赋值"null"
       this.searchMap.manager_id = resManager._id || "null";//获取id如果id不存在,赋值为"null"
-      this.fetchClasss();
+      this.fetchClasss(); //这个方法会发送请求,携带searchMap作为请求体
     },
 
 
@@ -262,7 +266,11 @@ export default {
 
     //获取学校列表
     fetchClasss() {
+      if(this.currentPage > Math.ceil(this.totalPage)){
+        this.currentPage = Math.ceil(this.totalPage)
+      }
       this.getAllRole();
+      this.getUserList();
       classsApi.getClassList(this.currentPage, this.pageSize, this.searchMap).then(response => {
         const res = response.data
 

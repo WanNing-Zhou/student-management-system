@@ -173,6 +173,37 @@ popstateFun方法
     }
 
 
+### 7.班级管理搜索bug
+
+**bug描述**
+
+班级管理按条件查询的时候,如果查询的是不存在的教师或者学管的姓名,就会返回全部信息
+
+**修复前**
+    
+    searchData() {
+      this.currentPage = 1;
+      const resTeacher = this.userAll.find(item => item.name === this.search.teacher) || {}; //根据姓名找到教师对象
+      const resManager = this.userAll.find(item => item.name === this.search.manager) || {};//根据姓名找到学管对象
+      this.searchMap.teacher_id = resTeacher._id || ""; 
+      this.searchMap.manager_id = resManager._id || "";
+      this.fetchClasss(); //这个方法会发送请求,携带searchMap作为请求体
+    },
+
+**bug原因**
+
+前端对教师/学管根据姓名匹配对应的id,如果匹配失败就会赋值为空,后端在相应请求的时候,如果学管id和教师id为空的话,会默认返回全部
+
+**修复后**
+
+    searchData() {
+      this.currentPage = 1;
+      const resTeacher = this.userAll.find(item => item.name === this.search.teacher) || {}; //根据姓名找到教师对象
+      const resManager = this.userAll.find(item => item.name === this.search.manager) || {};//根据姓名找到学管对象
+      this.searchMap.teacher_id = resTeacher._id || "null"; //获取id如果不存在,赋值"null"
+      this.searchMap.manager_id = resManager._id || "null";//获取id如果id不存在,赋值为"null"
+      this.fetchClasss(); //这个方法会发送请求,携带searchMap作为请求体
+    },
 
 
 
