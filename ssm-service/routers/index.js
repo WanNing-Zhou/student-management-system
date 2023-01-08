@@ -455,21 +455,26 @@ router.post('/manage/major/update', (req, res) => {
 })
 
 
-//获取班级信息
-router.post('/manage/class/list',(req,res)=>{
-    let page = req.body.page || 1
-    let size = req.body.size || 5
-    let serachMap =  req.body.searchMap || {}
-    let obj = {}
-    //如果serachMap.teacher_id有值就会俄日obj['teacher_id']赋值,如果没有,obj就为空
-    serachMap.teacher_id ? obj['teacher_id'] = searchMap.teacher_id : obj
-    serachMap.manager_id ? obj['manager_io'] = searchMap.manager_id : obj
-    let a;
-    let b;
-    ClassModel.find(obj).then(classs=>{
+//获取班级列表
+router.post('/manage/class/list', (req, res) => {
+    let page = req.body.page || 1;
+    let size = req.body.size || 5;
+    let searchMap = req.body.searchMap || {};
+    let obj = {};
+    searchMap.teacher_id ? obj["teacher_id"] = searchMap.teacher_id : obj;
+    searchMap.manager_id ? obj["manager_id"] = searchMap.manager_id : obj;
+
+    ClassModel.find(obj).then(classs => {
         let count = classs.length
-        ClassModel.find(obj).skip((page-1)*parseInt(size)).limit(parseInt(size)).exec((err,data)=>{
-            res.send({status:0,data:{total:count,data}})
+        ClassModel.find(obj).skip((page - 1) * parseInt(size)).limit(parseInt(size)).exec((err, data) => {
+
+            res.send({
+                status: 0,
+                data: {
+                    total: count,
+                    data,
+                }
+            })
         })
     }).catch(error => {
         console.error('获取班级列表异常', error);
@@ -478,7 +483,6 @@ router.post('/manage/class/list',(req,res)=>{
             msg: '获取班级列表异常,请稍后再试！'
         })
     })
-
 })
 
 //添加班级
@@ -490,9 +494,7 @@ router.post('/manage/class/add', (req, res) => {
     // console.log(name);
     //处理:判断用户是否已经存在,如果存在返回错误信息,如果不存在保存
     //查询(根据username)
-    ClassModel.findOne({
-        name
-    }).then(data => {
+    ClassModel.findOne({name}).then(data => {
         if (data) {
             res.send({
                 status: 1,

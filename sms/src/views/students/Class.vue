@@ -13,15 +13,9 @@
       </el-form-item>
 
       <el-form-item>
-
         <el-button icon="el-icon-search" type="primary" @click="searchData">查询</el-button>
-
         <el-button icon="el-icon-edit" type="primary" @click="handleAdd">新增</el-button>
-
-
         <el-button @click="resetForm('searchForm')">重置</el-button>
-
-
       </el-form-item>
 
     </el-form>
@@ -30,7 +24,6 @@
     <el-table :data="classs" height="380" border style="width: 100%">
       <el-table-column type="index" label="序号" width="60">
       </el-table-column>
-
       <el-table-column prop="name" label="班级名称">
       </el-table-column>
       <el-table-column prop="teacher_id" label="授课教师" :formatter="formatTeacher">
@@ -40,8 +33,6 @@
       <!-- 课程阶段 -->
       <el-table-column prop="stage" label="课程阶段">
       </el-table-column>
-
-
       <el-table-column label="操作" width="250">
         <template slot-scope="scope">
           <el-button size="mini" @click="handleEdit(scope.row._id)">编辑</el-button>
@@ -56,24 +47,67 @@
                    :total="total">
     </el-pagination>
 
+    <!-- 添加或编辑班级    -->
+    <el-dialog title="添加/编辑班级" :visible.sync="dialogFormVisible" width="500px">
+      <el-form :model="updateClass" status-icon ref="classForm" label-width="100px" label-position="right"
+               style="width:400px" :rules="rules">
+        <el-form-item label="班级名称" prop="name">
+          <el-input v-model="updateClass.name"></el-input>
+        </el-form-item>
+        <el-form-item label="授课教师" prop="teacher_id">
+          <el-select v-model="updateClass.teacher_id" class="filter-item" placeholder="请点击选择">
+            <el-option v-for="option in teacherOptions" :key="option._id" :label="option.name"
+                       :value="option._id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="学管" prop="manager_id">
+          <el-select v-model="updateClass.manager_id" class="filter-item" placeholder="请点击选择">
+            <el-option v-for="option in managerOptions" :key="option._id" :label="option.name"
+                       :value="option._id">
+            </el-option>
+
+          </el-select>
+
+        </el-form-item>
+        <el-form-item label="课程阶段" prop="stage">
+          <el-input v-model="updateClass.stage" placeholder="请填写课程阶段"></el-input>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="updateClass._id === null ? addData('classForm') : updateData('classForm')">
+          确 定
+        </el-button>
+      </div>
+
+    </el-dialog>
+
+
   </div>
 </template>
 
 <script>
 
-
 import classsApi from "@/api/classs";
 import userApi from "@/api/user";
-
+import roleApi from "@/api/role";
 
 export default {
 
   name: "Class",
   mounted() {
     this.fetchClasss();
+    this.getUserList();
+    this.getAllRole();
   },
   data() {
     return {
+      roles:[],//用来存储角色
+      teacher_id:'',
+      manager_id:'',
       classs: [],
       total: 0,//总记录数
       totalPage: 1,
@@ -116,11 +150,6 @@ export default {
           message: "教师必须填写",
           trigger: ["blur", "change"],
         }],
-        manager_id: [{
-          required: true,
-          message: "学管必须填写",
-          trigger: ["blur", "change"],
-        }],
         stage: [{
           required: true,
           message: "课程阶段必须填写"
@@ -134,22 +163,34 @@ export default {
 
   methods: {
 
+    getAllRole(){
+      roleApi.getRoleList().then(response=>{
+        const resp = response.data
+        resp.data.forEach(item=>{
+          if(item.name==="教师")
+            this.teacher_id = item._id
+          if (item.name==="学管")
+            this.manager_id = item._id
+        })
+
+      })
+    },
+
+
     searchData() {
       this.currentPage = 1;
-      const resTeacher = this.userAll.find(item => item.name === this.search.teacher) || {};
-      const resManager = this.userAll.find(item => item.name === this.search.manager) || {};
-
-      this.searchMap.teacher_id = resTeacher._id || "";
-
-      this.searchMap.manager_id = resManager._id || "";
+      const resTeacher = this.userAll.find(item => item.name === this.search.teacher) || {}; //根据姓名找到教师对象
+      const resManager = this.userAll.find(item => item.name === this.search.manager) || {};//个面具姓名找到学管对象
+      this.searchMap.teacher_id = resTeacher._id || "null"; //获取id如果不存在,赋值"null"
+      this.searchMap.manager_id = resManager._id || "null";//获取id如果id不存在,赋值为"null"
       this.fetchClasss();
     },
+
 
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
 
-    // 这三个还没有写完
 
     handleEdit(_id) {
       //清空数据
@@ -165,7 +206,7 @@ export default {
     updateData(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          classApi.update(this.updateClass).then((response) => {
+          classsApi.update(this.updateClass).then((response) => {
             const resp = response.data;
             if (resp.status === 0) {
               this.fetchClasss();
@@ -196,7 +237,6 @@ export default {
               type: "success",
               message: "删除班级成功"
             });
-
             //更新总页数
             this.totalPage = (this.total - 1) / this.pageSize;
             //删除成功,刷新列表
@@ -222,6 +262,7 @@ export default {
 
     //获取学校列表
     fetchClasss() {
+      this.getAllRole();
       classsApi.getClassList(this.currentPage, this.pageSize, this.searchMap).then(response => {
         const res = response.data
 
@@ -241,9 +282,9 @@ export default {
         if (res.status === 0) {
           this.userAll = res.data;
           this.userAll.map(item => {
-            if (item.role_id === "62d7673c54c0a229b38a1e99") {
+            if (item.role_id === this.teacher_id) { //判断是否时教师
               this.teacherOptions.push(item);
-            } else if (item.role_id === "62d7674354c0a229b38a1e9c") {
+            } else if (item.role_id === this.manager_id) { //判断是否是学管
               this.managerOptions.push(item);
             }
           })
@@ -268,7 +309,7 @@ export default {
         if (valid) {
           //验证通过,提交添加
           alert('add submit');
-          classApi.add(this.updateClass).then(response => {
+          classsApi.add(this.updateClass).then(response => {
             const res = response.data;
             if (res.status === 0) {
               this.fetchClasss();
@@ -285,10 +326,11 @@ export default {
         }
       })
     },
+
     handleAdd() {
       this.updateClass = {
         _id: null,
-        name: "b",
+        name: "",
         teacher_id: '',
         manager_id: '',
         stage: ''
@@ -298,9 +340,7 @@ export default {
         this.$refs['classForm'].resetFields()
       })
     },
-
   }
-
 }
 </script>
 
