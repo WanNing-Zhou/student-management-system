@@ -82,8 +82,8 @@ const loading = {
 //请求拦截器
 request.interceptors.request.use(config => {
     //如果当前请求不是获取用户权限列表
-    if (config.url != "/menus") {
-        getMenus();
+    if (config.url != "/menus") { //对该路径的请求放行
+        getMenus(); //权限验证功能
         // console.log(config.url);
     }
     //请求拦截
