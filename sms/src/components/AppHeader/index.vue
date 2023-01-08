@@ -6,7 +6,7 @@
     </a>
     <el-dropdown @command="handleCommand">
             <span class="el-dropdown-link">
-                admin<i class="el-icon-arrow-down el-icon--right"></i>
+                {{ user.username }}<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item command="a" icon="el-icon-edit">修改密码</el-dropdown-item>
@@ -29,6 +29,9 @@
 <script>
 import {reqWeather} from "@/api/jsonp";
 import {formatDate} from "@/utils/dateUtils";
+import memoryUtils from "@/utils/memoryUtils";
+import storageUtils from "@/utils/storageUtils";
+import userApi from "@/api/user";
 
 export default {
   data() {
@@ -38,6 +41,7 @@ export default {
       tem_night:'',
       wea:'',
       wea_img:'',
+      user: memoryUtils.user
     }
   },
 

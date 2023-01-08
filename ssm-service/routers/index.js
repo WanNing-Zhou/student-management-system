@@ -147,4 +147,18 @@ router.post('/manage/user/delete',(req,res)=>{
 })
 
 
+//获取权限列表
+router.post('/menus',(req,res)=>{
+    const {roleId} = req.body
+    RoleModel.findOne({_id:roleId}).then(role=>{
+        res.send({status:0,data:{menus:role.menus}})
+    }).catch(error => {
+        console.log("更新用户异常", error)
+        res.send({status: 1, msg: "获取权限列表异常,请稍后再试"})
+    })
+})
+
+
+
+
 module.exports = router
