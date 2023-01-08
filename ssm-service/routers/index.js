@@ -1,3 +1,4 @@
+
 const express = require('express')
 //获取路由对象
 const router = express.Router()
@@ -5,6 +6,7 @@ const UserModel = require('../models/UserModel')
 const md5 = require('blueimp-md5')
 const RoleModel = require('../models/RoleModel')
 const SchoolModel = require('../models/SchoolModel')
+const MajorModel = require('../models/MajorModel')
 
 
 
@@ -303,6 +305,155 @@ router.post('/manage/school/delete', (req, res) => {
         })
     })
 })
+
+
+//专业
+//获取所学专业列表(所有)
+router.get('/manage/major/all', (req, res) => {
+    MajorModel.find().then(majors => {
+        res.send({
+            status: 0,
+            data: majors
+        })
+    }).catch(error => {
+        console.error("获得所有专业异常", erroe);
+        res.send({
+            status: 1,
+            msg: "获取所学专业异常,请稍后再试"
+        })
+    })
+})
+
+//获取专业列表
+router.post('/manage/major/list', (req, res) => {
+    let page = req.body.page || 1;
+    let size = req.body.size || 5;
+    MajorModel.find({}).then(majors => {
+        let count = majors.length
+        MajorModel.find().skip((page - 1) * parseInt(size)).limit(parseInt(size)).exec((err, data) => {
+            MajorModel.find().then(roles => {
+                res.send({
+                    status: 0,
+                    data: {
+                        total: count,
+                        data,
+                    }
+                })
+            })
+        })
+    }).catch(error => {
+        console.error('获取专业列表异常', error);
+        res.send({
+            status: 1,
+            msg: '获取专业列表异常,请稍后再试！'
+        })
+    })
+})
+
+
+
+//添加专业
+router.post('/manage/major/add', (req, res) => {
+    //读取请求参数数据
+    const {
+        majorname
+    } = req.body;
+    // console.log(majorname);
+    //处理:判断用户是否已经存在,如果存在返回错误信息,如果不存在保存
+    //查询(根据username)
+    MajorModel.findOne({
+        majorname
+    }).then(major => {
+        if (major) {
+            res.send({
+                status: 1,
+                msg: '此专业已存在'
+            });
+            return new Promise(() => {})
+        } else {
+            //没值(不存在)
+            //保存
+            return MajorModel.create({
+                ...req.body,
+            });
+        }
+    }).then(major => {
+        //返回包含user的json数据
+        res.send({
+            status: 0,
+            data: major
+        })
+    }).catch(error => {
+        console.error('添加专业异常', error);
+        res.send({
+            status: 1,
+            msg: '添加专业异常,请重新尝试'
+        });
+    })
+})
+
+//删除专业
+router.post('/manage/major/delete', (req, res) => {
+    const {
+        majorId
+    } = req.body;
+    MajorModel.deleteOne({
+        _id: majorId
+    }).then(doc => {
+        res.send({
+            status: 0
+        })
+    }).catch(error => {
+        console.error('删除专业信息异常', error);
+        res.send({
+            status: 1,
+            msg: '删除专业信息异常,请重新尝试'
+        })
+    })
+})
+
+//id查询专业
+router.get('/manage/major/find', (req, res) => {
+    const major = req.query;
+    MajorModel.findById({
+        _id: major._id
+    }).then(data => {
+        res.send({
+            status: 0,
+            data
+        })
+    }).catch(error => {
+        console.error('根据id查询专业异常', error);
+        res.send({
+            status: 1,
+            msg: '根据id查询专业异常,请重新尝试'
+        })
+    })
+})
+
+
+//提交修改数据接口
+//更新专业
+router.post('/manage/major/update', (req, res) => {
+    const major = req.body
+    MajorModel.findOneAndUpdate({
+        _id: major._id
+    }, major).then(oldMajor => {
+        const data = Object.assign(oldMajor, major)
+        res.send({
+            status: 0,
+            data
+        })
+    }).catch(error => {
+        console.error('更新专业异常', error);
+        res.send({
+            status: 1,
+            msg: '更新专业异常,请稍后再试！'
+        })
+    })
+})
+
+
 
 
 module.exports = router
