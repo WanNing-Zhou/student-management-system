@@ -8,7 +8,7 @@ const RoleModel = require('../models/RoleModel')
 const SchoolModel = require('../models/SchoolModel')
 const MajorModel = require('../models/MajorModel')
 const ClassModel = require('../models/ClassModel')
-
+const StudentModel = require('../models/StudentModel')
 
 
 //post请求, 请求地址 '/login'
@@ -583,6 +583,121 @@ router.post('/manage/class/delete', (req, res) => {
         })
     })
 })
+
+
+//获取学员列表
+router.post('/manage/student/list',(req,res)=>{
+    let page = req.body.page || 1
+    let size = req.body.size || 5
+    let searchMap = req.body.searchMap
+    let obj = {}
+    searchMap.name ? obj['name'] = searchMap.name : obj;
+    searchMap.direction ? obj['direction'] = searchMap.direction : obj;
+    searchMap.class ? obj['class'] = searchMap.class : obj;
+    searchMap.teacher_id ? obj['teacher_id'] = searchMap.teacher_id : obj;
+    searchMap.manager_id ? obj['manager_id'] = searchMap.manager_id : obj;
+    StudentModel.find(obj).then(students => {
+        let count = students.length
+        StudentModel.find(obj).skip((page - 1) * parseInt(size)).limit(parseInt(size)).exec((err, data) => {
+            res.send({
+                status: 0,
+                data: {total: count, data}
+            })
+        })
+    }).catch(error => {
+        console.error('获取学员列表异常', error);
+        res.send({
+            status: 1,
+            msg: '获取学员列表异常,请稍后再试！'
+        })
+    })
+
+})
+
+//添加学员
+router.post('/manage/student/add', (req, res) => {
+    StudentModel.create({
+        ...req.body
+    }).then(data => {
+        //返回包含user的json数据
+        res.send({
+            status: 0,
+            data: data
+        })
+
+    }).catch(error => {
+        console.error('添加学员异常', error);
+        res.send({
+            status: 1,
+            msg: '添加学员异常,请重新尝试'
+        })
+    })
+})
+
+
+//根据id查询学员
+router.get('/manage/student/find', (req, res) => {
+    const student = req.query;
+
+    // console.log(student._id);
+    StudentModel.findById({
+        _id: student._id
+    }).then(data => {
+        //返回包含user的json数据
+        res.send({
+            status: 0,
+            data,
+        })
+
+    }).catch(error => {
+        console.error('根据id查询学员异常', error);
+        res.send({
+            status: 1,
+            msg: '根据id查询学员异常,请重新尝试'
+        })
+    })
+})
+
+//更新学员信息
+router.post('/manage/student/update', (req, res) => {
+    const student = req.body;
+    StudentModel.findOneAndUpdate({
+        _id: student._id
+    }, student).then(oldStudent => {
+        const data = Object.assign(oldStudent, student);
+
+        //返回包含user的json数据
+        res.send({
+            status: 0,
+            data: data
+        })
+
+    }).catch(error => {
+        console.error('更新学员异常', error);
+        res.send({status: 1, msg: '更新学员异常,请重新尝试'})
+    })
+})
+
+//删除学员
+router.post('/manage/student/delete', (req, res) => {
+    const studentId = req.body.studentId;
+
+    StudentModel.deleteOne({
+        _id: studentId
+    }).then(doc => {
+        //返回包含user的json数据
+        res.send({status: 0, msg: "删除学员成功",})
+
+    }).catch(error => {
+        console.error('删除学员异常', error);
+        res.send({
+            status: 1,
+            msg: '删除学员异常,请重新尝试',
+            error,
+        })
+    })
+})
+
 
 
 
