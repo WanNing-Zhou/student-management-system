@@ -56,7 +56,7 @@ export default {
         //4.如果当前用户有此item的某个自item的权限
         //查看当前item的子节点中的index时候在用户权限列表中存在.find方法,会返回对应的元素,但是需要的是布尔值,所以两次取反强制转换
 
-        return !!item.children.find(child => menus.indexOf(child.index) !== -1)
+        return !!item.children.find(child => menus.indexOf(child.index) !== -1)  //将这个值转换为bool类型的值并返回
       }
       return false;
     },

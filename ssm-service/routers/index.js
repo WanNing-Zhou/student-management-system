@@ -12,10 +12,16 @@ router.post('/login', (req, res) => {
 
     UserModel.findOne({username, password: md5(password)}).then(user => { //根据用户名密码查询用户
         if (user) {//登录成功
-            user._doc.role = {
-                menus: []
+            if(user.role_id){ //如果角色id存在
+                RoleModel.findOne({username,password:md5(password)}).then(role=>{
+                    user._doc.role = role
+                    res.send({status:0,data:user}) //将角色id返回
+                })
+            }else{ //这个是超级管理员的情况
+                user._doc.role = {menus: []}
+                res.send({status: 0, data: user})
             }
-            res.send({status: 0, data: user})
+
         } else {
             res.send({status: 1, msg: '用户名密码不存在'})
         }
