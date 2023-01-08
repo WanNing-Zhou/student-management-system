@@ -47,8 +47,22 @@ export default {
 
   methods: {
     handleCommand(command) {
-      this.$message('click on item ' + command)
+      switch (command) {
+        case "a":
+          this.handlePwd();
+          break;
+        case "b":
+          this.handleLogout();
+          break;
+        default:
+          break;
+      }
     },
+
+    handlePwd(){ //更改密码
+
+    },
+
     getWeather() {
       reqWeather('哈尔滨').then(res => {
         const { tem_day,tem_night,wea,wea_img } = res;
@@ -83,6 +97,10 @@ export default {
       memoryUtils.user = {};
       storageUtils.removeUser();
       this.$router.replace("/login");
+      this.$message({
+        type:'success',
+        message:'退出成功'
+      })
     },
 
   }, mounted() {

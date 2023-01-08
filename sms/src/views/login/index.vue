@@ -23,6 +23,19 @@ import {login} from '@/api/login'
 import  sotorageUtils from '@/utils/storageUtils'
 export default {
   name: "index.vue",
+  mounted() {
+    // 登录页阻止回退
+    sessionStorage.clear()
+    history.pushState(null, null, document.URL)
+    window.addEventListener(
+        'popstate',
+        function() {
+          history.pushState(null, null, document.URL)
+        },
+        false
+    )
+  },
+
   data() {
     let validateUserName = (rule, value, callback) => {
       value = value.trim() //去除前后空格

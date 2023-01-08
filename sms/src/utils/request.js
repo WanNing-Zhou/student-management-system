@@ -52,7 +52,6 @@ const getMenus = () => {
             console.log(err);
             return
         })
-
     }
 }
 
