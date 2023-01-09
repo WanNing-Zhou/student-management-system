@@ -1,5 +1,6 @@
 <template>
   <div class="student-update">
+    <!--后退按钮-->
     <el-button icon="el-icon-arrow-left" @click="$router.push('/student')" circle></el-button>
 
     <el-form status-icon ref="studentForm" :model="updateStudent" label-width="100px" label-position="right"
@@ -119,18 +120,164 @@
 
     <div slot="footer" class="dialog-footer">
       <el-button type="primary"
-                 @click="updateStudent._id === null ? addData('studentForm') : updateData('studentForm')">确
-        定</el-button>
+                 @click="updateStudent._id === null ? addData('studentForm') : updateData('studentForm')"
+      >确 定</el-button>
     </div>
   </div>
 </template>
 
 <script>
+import schoolApi from "@/api/school";
+import studentApi from "@/api/student";
+import classsApi from "@/api/classs";
+import majorApi from "@/api/major";
 export default {
-  name: "StudentUpdate"
+  name: "StudentUpdate",
+  data() {
+    const validatePhone = (rule, value, callback) => {
+      value = value.trim()
+      const phoneReg = /^(13[0-9;]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/
+      if (value === '') {
+        callback(new Error('请输入手机号码'))
+      } else if (!phoneReg.test(value)) {
+        callback(new Error('请输入正确的手机号码'))
+      } else {
+        callback()
+      }
+    };
+    const validateIdNumber = (rule, value, callback) => {
+      value = value.trim()
+      const _IDRe18 = /^([1-6][1-9]|50)\d{4}(18|19|20)\d{2}((0[1-9])|10|11|12)(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/;
+      const _IDre15 = /^([1-6][1-9]|50)\d{2}((0[1-9])|10|11|12)(([0-2][1-9])|10|20|30|31)\d{3}$/;
+      if (_IDRe18.test(value) || _IDre15.test(value)) {
+        callback();
+      } else {
+        callback(new Error('请输入正确的身份证号码'))
+      }
+    };
+    return {
+      baseApi: process.env.VUE_APP_BASE_API,
+      baseUrl: process.env.VUE_APP_SERVICE_URL,
+      updateDialogVisible: false,
+      updateStudent: { //存储学生信息
+        _id: null,
+        name: "",
+        gender: "",
+        school: "",
+        major: "",
+        grade: "",
+        education: "",
+        direction: "",
+        id_number: "",
+        phone: "",
+        parent: "",
+        parent_phone: "",
+        address: "",
+        qq: "",
+        class: "",
+        admission_date: "",
+        teacher_id: "",
+        manager_id: "",
+        pictures: [],
+        note: "",
+      },
+      genderOptions: [
+        { type: "0", name: '男' },
+        { type: "1", name: '女' },
+      ],
+      schoolOptions: [],
+      majorOptions: [],
+      gradeOptions: [
+        { type: '1', name: '大一' },
+        { type: '2', name: '大二' },
+        { type: '3', name: '大三' },
+        { type: '4', name: '大四' },
+        { type: '5', name: '在读研究生' }
+      ],
+      educationOptions: [
+        { type: '1', name: '专科' },
+        { type: '2', name: '本科' },
+        { type: '3', name: '硕士' },
+        { type: '4', name: '社会' }
+      ],
+      directionOptions: [
+        { type: '1', name: 'web前端' },
+        { type: '2', name: 'Java' },
+        { type: '3', name: 'C/C++' },
+        { type: '4', name: 'UI/UE' },
+      ],
+      classOptions: [], //班级选择
+      teacherOptions: [], //教师选择
+      managerOptions: [],//
+      pictureDialogVisible: false,
+      dialogImageUrl: "",
+      disabled: false,
+      fileList: [
+        // {
+        //     uid: "-1",
+        //     name: 'food.jpeg',
+        //     status: 'success',
+        //     url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality100'
+        // }
+      ],
+      setting: {
+        menubar: false,
+        toolbar: "undo redo | fullscreen | formatselect alignleft aligncenter alignright alignjustify | link unlink | numlist buillist | image media table | fontselect fontsizeselect forecolor backcolor | bold italic underline strikethrough | indent outdent | superscript subscript | removeformat |",
+        toolbar_drawer: "sliding",
+        quickbars_selection_toolbar: "removeformat | bold italic underline strikethrough | fontsizeselect forecolor backcolor",
+        plugins: "link image media table lists fullscreen quickbars imagetools",
+        language: "zh_CN",
+        height: 350,
+      },
+      createFilter(queryString) {
+        return (restaurant) => {
+          return restaurant.value.indexOf(queryString) === 0
+        }
+      },
+      rules: { //自定义校验规则
+        name: [{ required: true, message: '请填写姓名', trigger: "blur" }],
+        gender: [{ required: true, message: '请选择性别', trigger: "blur" }],
+        direction: [{ required: true, message: '请选择学习方向', trigger: "blur" }],
+        id_number: [{ validator: validateIdNumber, trigger: ["blur", "change"] }],
+        phone: [{ required: true, validator: validatePhone, trigger: ["blur", "change"] }],
+        class: [{ required: true, message: '请选择所在班级', trigger: "blur" }],
+        teacher_id: [{ required: true, message: '请选择授课教师', trigger: "blur" }],
+        manager_id: [{ required: true, message: '请选择学管', trigger: "blur" }],
+      }
+    }
+  },
+  methods:{
+    //匹配学校
+    querySearchSchool(queryString, cb) {
+    },
+    //匹配专业
+    querySearchMajor(queryString, cb) {
+    },
+    //
+    handleChange(){
+    },
+    addData(forName){ //添加数据
+    },
+    updateData(formMane){ //更新数据
+    }
+  }
 }
 </script>
 
 <style scoped>
+.student-update {
+  padding: 20px;
+}
 
+.el-form {
+  margin-top: 20px;
+}
+
+.dialog-footer {
+  text-align: center;
+}
+
+.dialog-footer .el-button {
+  width: 400px;
+}
 </style>
