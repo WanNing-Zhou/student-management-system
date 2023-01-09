@@ -420,7 +420,7 @@ export default {
             if (pictures && pictures.length>0){
               this.fileList = pictures.map((img,index)=>({
                 name:img,
-                url:this.baseUrl+'/upload/'+img
+                url: this.baseUrl+'/upload/'+img
               }))
             }
           }
