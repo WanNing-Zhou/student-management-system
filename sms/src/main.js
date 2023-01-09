@@ -5,6 +5,11 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css'
 import memoryUtils from "@/utils/memoryUtils";
 import storageUtils from "@/utils/storageUtils";
+import VueTinymce from "@packy-tang/vue-tinymce";
+import tinymce from "tinymce"
+
+Vue.prototype.$tinymce = tinymce
+Vue.use(VueTinymce)
 
 
 Vue.config.productionTip = false;
