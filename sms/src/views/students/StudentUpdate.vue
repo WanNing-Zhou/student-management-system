@@ -320,7 +320,7 @@ export default {
           this.updateStudent.pictures = this.getImgs();
           studentApi.update(this.updateStudent).then(response => {
             const res = response.data
-            console.log(res);
+            // console.log(res);
             if (res.status === 0) {
               this.$router.replace("/student")
             }

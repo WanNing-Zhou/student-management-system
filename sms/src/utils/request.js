@@ -49,7 +49,7 @@ const getMenus = () => {
                 }
             }
         }).catch(err => {
-            console.log(err);
+            // console.log(err);
             return
         })
     }
@@ -82,13 +82,14 @@ const loading = {
 request.interceptors.request.use(config => {
     //如果当前请求不是获取用户权限列表
     if (config.url != "/menus") { //对该路径的请求放行
+        loading.open(); //打开加载效果
         getMenus(); //权限验证功能
         // console.log(config.url);
     }
     //请求拦截
     return config;
 }, error => {
-    //出现异常,返回一个Promise的失败对象
+    loading.close();
     return Promise.reject(error)
 })
 
@@ -96,10 +97,26 @@ request.interceptors.request.use(config => {
 //响应拦截器
 request.interceptors.response.use(response => {
     //将响应返回
-    return response
+    loading.close(); //加载效果
+    const resp = response.data;
+
+    if (resp.status !== 0) {
+        Message({
+            message: resp.msg || "系统异常",
+            type: 'warning',
+            duration: 5000 //停留时长
+        })
+    }
+    return response;
 }, error => {
     //出现异常,返回一个promise的失败对象
-    return Promise.reject(error)
+    loading.close();
+    Message({
+        message: error.message,
+        type: 'error',
+        duration: 5000,
+    })
+    return Promise.reject(error);
 })
 
 

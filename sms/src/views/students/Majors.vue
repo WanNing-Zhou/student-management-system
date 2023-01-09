@@ -183,7 +183,7 @@ export default {
                 message: "添加专业成功"
               });
             } else {
-              console.log(res);
+              // console.log(res);
             }
           })
         } else {

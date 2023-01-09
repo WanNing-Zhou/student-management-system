@@ -248,11 +248,16 @@ popstateFun方法
 第一次进入添加/编辑学员页面的时候显示正常,第二次进入富文本框消失,控制台报出404错误
 
 **bug原因**
+
 控制台输出404错误,查看网络服务后,发现路径都变成了 .../js/iocn/.. , 而所有的富文本的文件都存在public文件夹下的tinymce文件内,
 
 
 **解决办法**
-所以将tinymce重新命名js,并重新引入
+
+方法一:所以将tinymce重新命名js,并重新引入(这个方法跟屎一样,治标不治本)
+
+方法二:在index.html文件中引入tinymce文件 记住路径要是 /tinymce/tinymce.js  而不是 tinymce/tinymce.js
+文件在打包后路径就发生了改变,如果按照原来的路径去写的话会发生错误 /tinymce/tinymce.js 因为是在public文件夹下,不需要添加/public
 
 
 

@@ -716,35 +716,88 @@ router.post('/manage/student/delete', (req, res) => {
 })
 
 
-//查询某一年学员
-router.post('/manage/student/date', (req, res) => {
 
+//校验原密码是否正确
+router.post('/manage/user/pwd', function (req, res) {
+    let body = req.body;
+    UserModel.findOne({_id: body.userId, password: md5(body.password)}).then(user => {
+        if (!user) {
+            return res.send({
+                status: 1,
+                msg: '密码不正确!'
+            })
+        }
+        return res.send({
+            status: 0,
+            date: user
+        })
+    })
+})
+
+
+//修改密码
+router.put('/manage/user/pwd', function (req, res) {
+    var id = req.body.userId;
+    UserModel.findOne({
+        _id: id
+    }).then(user => {
+        if (!user) {
+            return res.send({
+                status: 1,
+                msg: '密码不正确!'
+            })
+        }
+        user.password = md5(req.body.password)
+        UserModel.findByIdAndUpdate(id, user).then(() => {
+            return res.send({
+                status: 0,
+                msg: '修改密码成功!'
+            })
+        })
+    })
+})
+
+
+
+
+//按年份查询学员数量
+router.post('/manage/student/date', (req, res) => {
     let {year} = req.body;
-    year = year + "";
+    year = year + ""; //把年转换为字符串
     StudentModel.aggregate([{ //添加字段
         $project: {
-            year: {$substr: ["$admission_date", 0, 4]},
+            year: {$substr: ["$admission_date", 0, 4]}, //年份
             //$month取出$date字段中月份
             //$date_d的数据类型必须是date
             //month:{$month:"$date_d"}
             //$dateFromString把字符串转为日期
             //month
-            month: {$substr: ["$admission_date", 5, 2]},},},
+            month: {$substr: ["$admission_date", 5, 2]},},}, //鱼粉
         //匹配年份
         {$match: {year}},
         // 分组查询, 按月分组, count计算当月有多少条数据
-        {$group: {_id: "$month", count: {$sum: 1},},}, //排序
-        {$sort: {_id: 1}},
+        {$group: {_id: "$month", count: {$sum: 1},},}, //分组
+        {$sort: {_id: 1}},//排序
     ]).exec((err, data) => {
-        return res.send({
-            status: 0,
-            data
-        })
+        if(err){
+            console.log('按年份查询异常',err)
+            return res.send({status:1,msg:'按年份查询异常,请稍后再试'})
+        }
+        {
+            return res.send({
+                status: 0,
+                data
+            })
+        }
+
     });
 })
 
 
+
 require('./file-upload')(router) //上传文件
+
+
 
 
 module.exports = router

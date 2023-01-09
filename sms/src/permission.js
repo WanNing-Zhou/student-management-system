@@ -6,7 +6,7 @@ import memoryUtils from "@/utils/memoryUtils";
 router.beforeEach((to,form,next)=>{
     //获取user信息,如果存在则代表已经登录过
     const user = memoryUtils.user
-    console.log(memoryUtils.user)
+    // console.log(memoryUtils.user)
     if (user && user._id){//如果用户信息存在
         if(to.path === '/login'){ //如果要去login页面则直接跳转到/页面
             console.log('拦截成功')

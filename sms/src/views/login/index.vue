@@ -82,7 +82,7 @@ export default {
     onSubmit(formName) {
       this.$refs[formName].validate(async (valid)=>{
         if(valid){
-          console.log(this.form.username,this.form.password)
+          // console.log(this.form.username,this.form.password)
           //发送请求
           let result = await login(this.form.username,this.form.password)
           if (result.data.status === 0){
@@ -91,14 +91,14 @@ export default {
               type:"success"
             })
             const user = result.data.data
-            console.log('将信息存储到本地')
+            // console.log('将信息存储到本地')
             sotorageUtils.saveUser(user)
             memoryUtils.user = user
             this.$router.replace("/")
           }
-          console.log(result)
+          // console.log(result)
         }else {
-          console.log("错误提交")
+          // console.log("错误提交")
           return false;
         }
       })

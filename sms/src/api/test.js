@@ -6,7 +6,7 @@ export default {
             url: '/test',
             method: 'get'
         }).then(response => {
-            console.log(response);
+            // console.log(response);
         })
     }
 }

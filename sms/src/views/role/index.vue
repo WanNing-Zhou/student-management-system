@@ -139,7 +139,7 @@ export default {
     },
 
     updateRole(){ //更新角色 /为角色设置权限
-      console.log(this.$refs['auth'].getMenus())
+      // console.log(this.$refs['auth'].getMenus())
       const newRole = this.$refs['auth'].getMenus()
       this.currentRow.menus = newRole.menus
       this.currentRow.name = newRole.name

@@ -7,10 +7,16 @@ import memoryUtils from "@/utils/memoryUtils";
 import storageUtils from "@/utils/storageUtils";
 import VueTinymce from "@packy-tang/vue-tinymce";
 import tinymce from "tinymce"
+// //按需引入ECharts
+// const echarts = require('echarts/lib/echarts');
+// require('echarts/lib/component/grid');
+// require('echarts/lib/chart/bar');
+
+import * as echarts from 'echarts'
 
 Vue.prototype.$tinymce = tinymce
 Vue.use(VueTinymce)
-
+Vue.prototype.$echarts = echarts
 
 Vue.config.productionTip = false;
 //全局引入ElementUI组件
@@ -22,9 +28,9 @@ const user = storageUtils.getUser()
 //如果用户存在,则放在memoryUtils,方便程序读取,不用每次都从数据库中去取
 if(user && user._id){
   memoryUtils.user = user //用于在各个组件中使用
-  login(memoryUtils.user).catch(err=>{
-    console.log("登录异常",err)
-  })
+//   login(memoryUtils.user).catch(err=>{
+//     console.log("登录异常",err)
+//   })
 }
 
 //在获取本地用户时后,引入路由守卫
