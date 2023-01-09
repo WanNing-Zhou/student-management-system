@@ -205,6 +205,42 @@ popstateFun方法
       this.fetchClasss(); //这个方法会发送请求,携带searchMap作为请求体
     },
 
+### 8.图片删除bug
+
+**bug描述**
+
+添加学员的图片删除操作,当删除第一张图片的时候,第二张图片无法删除,
+
+
+**修复前**
+
+    handleRemove(file) { //删除功能
+      studentApi.reqDeleteImg(file.name).then(response => {
+        const res = response.data;
+        if (res.status === 0) {
+          this.fileList.splice(
+              this.fileList.indexOf(file.name), 1); //根据文件的索引删除一张片
+        }
+      })
+    },
+
+**bug原因**
+
+使用elementUI的时候,会将图片保存在filelist中,但filelist保存的是图片对象,在查找的时候返回值为-1
+所以导致bug
+
+**修复后**
+
+     handleRemove(file) { //删除功能
+      studentApi.reqDeleteImg(file.name).then(response => {
+        const res = response.data;
+        if (res.status === 0) {
+          this.fileList.splice(
+              this.fileList.indexOf(file), 1); //根据文件的索引删除一张片
+        }
+      })
+    },
+
 
 
 
