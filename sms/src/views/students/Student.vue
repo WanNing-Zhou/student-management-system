@@ -237,9 +237,12 @@ export default {
       const obj = options.find(obj => obj.type === cellValue);
       return obj ? obj.name : null;
     },
+    //编辑会跳转到添加/编辑页面,并携带学员_id
     handleEdit(_id) {
       this.$router.push(`/student/update/${_id}`)
     },
+
+    //删除方法
     handleDelete(_id) {
       this.$confirm('确认删除这条记录吗？', "提示", {
         confirmButtonText: '确定',

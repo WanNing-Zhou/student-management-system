@@ -115,8 +115,10 @@
           <img :src="dialogImageUrl" alt="" width="100%">
         </el-dialog>
       </el-form-item>
+
+<!--   富文本编辑器   -->
       <el-form-item label="备注" prop="note">
-        <vue-tinymce v-model="updateStudent.note" :setting="setting"></vue-tinymce>
+        <vue-tinymce v-model="updateStudent.note" :setting="setting" :key="tinymceFlag"></vue-tinymce>
       </el-form-item>
     </el-form>
 
@@ -138,12 +140,20 @@ import userApi from "@/api/user";
 export default {
   name: "StudentUpdate",
   mounted() {
+
     this.getSchoolList()
     this.getMajorList()
     this.getAllRole()
     this.getClassList()
-
     this.getUserList()
+  },
+  activated() {
+    // 每次都给编辑器改变不同的key值使其每次切换页面都重新加载
+    this.tinymceFlag++;
+  },
+  beforeDestroy() {
+    // 销毁组件前销毁编辑器
+    this.tinymce  && this.tinymce.destroy();
   },
   data() {
     const validatePhone = (rule, value, callback) => {
@@ -168,6 +178,7 @@ export default {
       }
     };
     return {
+      tinymceFlag:1,//是防止组件缓存导致编辑器不能正常使用，每次切换来都更改key,使其重新渲染
       baseApi: process.env.VUE_APP_BASE_API,
       baseUrl: process.env.VUE_APP_SERVICE_URL,
       updateDialogVisible: false,
@@ -397,6 +408,28 @@ export default {
     getImgs() {
       return this.fileList.map(file => file.name)
     },
+
+    getStudent(){
+      const {_id} =this.$route.params //获取路由参数
+      if(_id != '-1'){
+        studentApi.getById(_id).then((response=>{
+          const resp = response.data
+          if (resp.status === 0){
+            this.updateStudent = resp.data
+            const {pictures} = resp.data
+            if (pictures && pictures.length>0){
+              this.fileList = pictures.map((img,index)=>({
+                name:img,
+                url:this.baseUrl+'/upload/'+img
+              }))
+            }
+          }
+        }))
+      }
+      schoolApi.getById(_id).then(
+
+      )
+    }
 
   }
 }
