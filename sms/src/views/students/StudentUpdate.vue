@@ -116,7 +116,7 @@
         </el-dialog>
       </el-form-item>
       <el-form-item label="备注" prop="note">
-<!--        <vue-tinymce v-model="updateStudent.note" :setting="setting"></vue-tinymce>-->
+        <vue-tinymce v-model="updateStudent.note" :setting="setting"></vue-tinymce>
       </el-form-item>
     </el-form>
 
@@ -232,14 +232,16 @@ export default {
         //     url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality100'
         //}
       ], //所有已上传的数组
-      setting: {
+      setting: { //富文本编辑框配置项
+        //去除文件栏
         menubar: false,
-        toolbar: "undo redo | fullscreen | formatselect alignleft aligncenter alignright alignjustify | link unlink | numlist buillist | image media table | fontselect fontsizeselect forecolor backcolor | bold italic underline strikethrough | indent outdent | superscript subscript | removeformat |",
+        //定义工具栏
+        toolbar: "undo redo | fullscreen | formatselect alignleft aligncenter alignright alignjustify | link unlink | numlist bullist | image media table | fontselect fontsizeselect forecolor backcolor | bold italic underline strikethrough | indent outdent | superscript subscript | removeformat |",
         toolbar_drawer: "sliding",
         quickbars_selection_toolbar: "removeformat | bold italic underline strikethrough | fontsizeselect forecolor backcolor",
-        plugins: "link image media table lists fullscreen quickbars imagetools",
-        language: "zh_CN",
-        height: 350,
+        plugins: "link image media table lists fullscreen quickbars",
+        language: 'zh_CN', //本地化设置
+        height: 350
       },
       rules: { //自定义校验规则
         name: [{ required: true, message: '请填写姓名', trigger: "blur" }],
