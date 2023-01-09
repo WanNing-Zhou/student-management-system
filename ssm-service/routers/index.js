@@ -455,6 +455,22 @@ router.post('/manage/major/update', (req, res) => {
 })
 
 
+//获取班级(所有)
+router.get('/manage/class/all', (req, res) => {
+    ClassModel.find().then(classs => {
+        res.send({
+            status: 0,
+            data: classs
+        })
+    }).catch(error => {
+        console.error("获得所有班级异常", error);
+        res.send({
+            status: 1,
+            msg: "获取所有班级异常,请稍后再试"
+        })
+    })
+})
+
 //获取班级列表
 router.post('/manage/class/list', (req, res) => {
     let page = req.body.page || 1;

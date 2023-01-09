@@ -2,7 +2,7 @@ import request from '../utils/request'
 
 export default {
 
-    getSchoolAll() {
+    getSchoolAll(){
         return request({
             url: '/manage/school/all',
             method: 'get'

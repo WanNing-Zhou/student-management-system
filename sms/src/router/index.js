@@ -9,6 +9,7 @@ import School from "@/views/students/School"
 import Majors from "@/views/students/Majors"
 import Student from "@/views/students/Student"
 import Class from "@/views/students/Class"
+import StudentUpdate from "@/views/students/StudentUpdate";
 
 Vue.use(VueRouter);
 
@@ -103,7 +104,18 @@ const routes = [
     },
     ]
   },
-
+  {
+    //学生管理
+    path: '/student/update/:_id',
+    component: Layout,
+    children: [{
+      path: '/',
+      component: StudentUpdate,
+      meta: {
+        title: '学生编辑'
+      }
+    },]
+  },
 ];
 
 const router = new VueRouter({
