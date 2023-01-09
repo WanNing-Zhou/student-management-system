@@ -17,12 +17,12 @@
       </el-form-item>
       <el-form-item label="所在学校" prop="school">
         <el-autocomplete v-model="updateStudent.school" class="inline-input"
-                         :fetch-suggestions="querySearchSchool">
+                         :fetch-suggestions="querySearchSchool" value-key="schoolname">
         </el-autocomplete>
       </el-form-item>
       <el-form-item label="专业" prop="major">
         <el-autocomplete v-model="updateStudent.major" class="inline-input"
-                         :fetch-suggestions="querySearchMajor">
+                         :fetch-suggestions="querySearchMajor" value-key="majorname">
         </el-autocomplete>
       </el-form-item>
       <el-form-item label="年级" prop="grade">
@@ -114,7 +114,7 @@
         </el-dialog>
       </el-form-item>
       <el-form-item label="备注" prop="note">
-        <vue-tinymce v-model="updateStudent.note" :setting="setting"></vue-tinymce>
+<!--        <vue-tinymce v-model="updateStudent.note" :setting="setting"></vue-tinymce>-->
       </el-form-item>
     </el-form>
 
@@ -131,8 +131,18 @@ import schoolApi from "@/api/school";
 import studentApi from "@/api/student";
 import classsApi from "@/api/classs";
 import majorApi from "@/api/major";
+import roleApi from "@/api/role";
+import userApi from "@/api/user";
 export default {
   name: "StudentUpdate",
+  mounted() {
+    this.getSchoolList()
+    this.getMajorList()
+    this.getAllRole()
+    this.getClassList()
+
+    this.getUserList()
+  },
   data() {
     const validatePhone = (rule, value, callback) => {
       value = value.trim()
@@ -185,8 +195,8 @@ export default {
         { type: "0", name: '男' },
         { type: "1", name: '女' },
       ],
-      schoolOptions: [],
-      majorOptions: [],
+      schoolOptions: [], //学校选择
+      majorOptions: [], //专业选择
       gradeOptions: [
         { type: '1', name: '大一' },
         { type: '2', name: '大二' },
@@ -208,7 +218,7 @@ export default {
       ],
       classOptions: [], //班级选择
       teacherOptions: [], //教师选择
-      managerOptions: [],//
+      managerOptions: [],//学管选择
       pictureDialogVisible: false,
       dialogImageUrl: "",
       disabled: false,
@@ -229,11 +239,6 @@ export default {
         language: "zh_CN",
         height: 350,
       },
-      createFilter(queryString) {
-        return (restaurant) => {
-          return restaurant.value.indexOf(queryString) === 0
-        }
-      },
       rules: { //自定义校验规则
         name: [{ required: true, message: '请填写姓名', trigger: "blur" }],
         gender: [{ required: true, message: '请选择性别', trigger: "blur" }],
@@ -243,23 +248,119 @@ export default {
         class: [{ required: true, message: '请选择所在班级', trigger: "blur" }],
         teacher_id: [{ required: true, message: '请选择授课教师', trigger: "blur" }],
         manager_id: [{ required: true, message: '请选择学管', trigger: "blur" }],
-      }
+      },
+      teacherId:'',
+      managerId:'',
     }
   },
   methods:{
     //匹配学校
     querySearchSchool(queryString, cb) {
+      let  schoolOptions = this.schoolOptions
+      let results = queryString ? schoolOptions.filter(this.createFilter(queryString)):schoolOptions
+      //调用 callback返回建议列表的数据
+      cb(results);
     },
     //匹配专业
     querySearchMajor(queryString, cb) {
+      let  majorOptions = this.majorOptions
+      let results = queryString ? majorOptions.filter(this.createFilter(queryString)):majorOptions
+      //调用 callback返回建议列表的数据
+      cb(results);
     },
     //
     handleChange(){
     },
-    addData(forName){ //添加数据
+    addData(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          // this.updateStudent.pictures = this.getImgs();
+          studentApi.add(this.updateStudent).then(response => {
+            const res = response.data
+            if (res.status === 0) {
+              this.$router.replace("/student");
+            }
+          })
+        } else {
+          return false
+        }
+      })
     },
     updateData(formMane){ //更新数据
-    }
+    },
+
+    getAllRole(){
+      roleApi.getRoleList().then(response=>{
+        const resp = response.data
+        resp.data.forEach(item=>{
+          if(item.name==="教师")
+            this.teacherId = item._id
+          if (item.name==="学管")
+            this.managerId = item._id
+        })
+      })
+    },
+    getUserList() {
+      userApi.getUserAll().then(response => {
+        const res = response.data
+        if (res.status === 0) {
+          this.userAll = res.data;
+          this.userAll.forEach(item => {
+            // console.log("role_id",item.role_id)
+            // console.log('teacherId',this.teacherId)
+            if (item.role_id === this.teacherId) {
+              this.teacherOptions.push(item)
+            } else if (item.role_id === this.managerId) {
+              this.managerOptions.push(item)
+            }
+          })
+          console.log("老师和学管",this.teacherOptions,this.managerOptions)
+        }
+      })
+    },
+    getClassList() {
+      classsApi.getClassAll().then(response => {
+        const res = response.data;
+        if (res.status === 0) {
+          this.classOptions = res.data
+        }
+      })
+    },
+    getSchoolList() {
+      schoolApi.getSchoolAll().then(response => {
+        const res = response.data;
+        if (res.status === 0) {
+          this.schoolOptions = res.data
+          const arr = res.data
+          // for (let i = 0; i < arr.length; i++) {
+          //   this.schoolOptions[i].value = arr[i].schoolname;
+          //   this.schoolOptions[i]._id = arr[i]._id;
+          // }
+          // console.log("schoolOptions",this.schoolOptions)
+        }
+      })
+    },
+
+    getMajorList() {
+      majorApi.getMajorAll().then(response => {
+        const res = response.data;
+        if (res.status === 0) {
+          this.majorOptions = res.data
+          const arr = res.data
+          // for (let i = 0; i < arr.length; i++) {
+          //   this.majorOptions[i].value = arr[i].majorname;
+          //   this.majorOptions[i]._id = arr[i]._id;
+          // }
+          // console.log("majorOptions",this.majorOptions)
+        }
+      })
+    },
+    createFilter(queryString) {
+      return (restaurant) => {
+        return restaurant.value.indexOf(queryString) === 0
+      }
+    },
+
   }
 }
 </script>
