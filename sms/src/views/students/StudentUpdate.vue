@@ -90,6 +90,8 @@
           </el-option>
         </el-select>
       </el-form-item>
+
+      <!-- 照片墙 -->
       <el-form-item label="照片" prop="pictures">
         <el-upload :action="baseApi + '/manage/img/upload'" list-type="picture-card" :auto-upload="true"
                    :file-list="fileList" name="image" accept="image/*" :on-change="handleChange">
@@ -219,17 +221,17 @@ export default {
       classOptions: [], //班级选择
       teacherOptions: [], //教师选择
       managerOptions: [],//学管选择
-      pictureDialogVisible: false,
-      dialogImageUrl: "",
-      disabled: false,
+      pictureDialogVisible: false, //大图弹窗是否展示
+      dialogImageUrl: "", //大图地址
+      disabled: false, //查看大图,删除,下载,三个按钮是否展示
       fileList: [
         // {
         //     uid: "-1",
         //     name: 'food.jpeg',
         //     status: 'success',
         //     url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality100'
-        // }
-      ],
+        //}
+      ], //所有已上传的数组
       setting: {
         menubar: false,
         toolbar: "undo redo | fullscreen | formatselect alignleft aligncenter alignright alignjustify | link unlink | numlist buillist | image media table | fontselect fontsizeselect forecolor backcolor | bold italic underline strikethrough | indent outdent | superscript subscript | removeformat |",
@@ -269,12 +271,23 @@ export default {
       cb(results);
     },
     //
-    handleChange(){
+    handleChange(file,fileList){
+      if(file.status === "success"){
+        const result = file.response
+        if (result.status === 0){
+          const {name,url} = result.data;
+          file = fileList[fileList.length - 1] //找到数组中最后一图片,将名子进行更改
+          file.name = name
+          file.url = url
+        }
+        this.fileList = fileList
+      }
     },
+
     addData(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          // this.updateStudent.pictures = this.getImgs();
+          this.updateStudent.pictures = this.getImgs();
           studentApi.add(this.updateStudent).then(response => {
             const res = response.data
             if (res.status === 0) {
@@ -359,6 +372,28 @@ export default {
       return (restaurant) => {
         return restaurant.value.indexOf(queryString) === 0
       }
+    },
+
+    handleRemove(file) { //删除功能
+      studentApi.reqDeleteImg(file.name).then(response => {
+        const res = response.data;
+        if (res.status === 0) {
+          this.fileList.splice(
+              this.fileList.indexOf(file), 1); //根据文件的索引删除一张片
+        }
+      })
+    },
+    handlePictureCardPreview(file) {  //查看大图的
+      this.dialogImageUrl = file.url;
+      this.pictureDialogVisible = true
+    },
+    handleDownload(file) { //下载功能
+      console.log(file);
+    },
+
+    //获取所有已上传文件的名字
+    getImgs() {
+      return this.fileList.map(file => file.name)
     },
 
   }

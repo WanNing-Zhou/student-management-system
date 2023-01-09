@@ -1,4 +1,3 @@
-
 const express = require('express')
 //获取路由对象
 const router = express.Router()
@@ -9,6 +8,7 @@ const SchoolModel = require('../models/SchoolModel')
 const MajorModel = require('../models/MajorModel')
 const ClassModel = require('../models/ClassModel')
 const StudentModel = require('../models/StudentModel')
+// const fileUpload = require('file-upload')
 
 
 //post请求, 请求地址 '/login'
@@ -352,7 +352,6 @@ router.post('/manage/major/list', (req, res) => {
 })
 
 
-
 //添加专业
 router.post('/manage/major/add', (req, res) => {
     //读取请求参数数据
@@ -370,7 +369,8 @@ router.post('/manage/major/add', (req, res) => {
                 status: 1,
                 msg: '此专业已存在'
             });
-            return new Promise(() => {})
+            return new Promise(() => {
+            })
         } else {
             //没值(不存在)
             //保存
@@ -516,7 +516,8 @@ router.post('/manage/class/add', (req, res) => {
                 status: 1,
                 msg: '此班级已存在'
             });
-            return new Promise(() => {})
+            return new Promise(() => {
+            })
         } else {
             //没值(不存在)
             //保存
@@ -602,7 +603,7 @@ router.post('/manage/class/delete', (req, res) => {
 
 
 //获取学员列表
-router.post('/manage/student/list',(req,res)=>{
+router.post('/manage/student/list', (req, res) => {
     let page = req.body.page || 1
     let size = req.body.size || 5
     let searchMap = req.body.searchMap
@@ -715,10 +716,35 @@ router.post('/manage/student/delete', (req, res) => {
 })
 
 
+//查询某一年学员
+router.post('/manage/student/date', (req, res) => {
+
+    let {year} = req.body;
+    year = year + "";
+    StudentModel.aggregate([{ //添加字段
+        $project: {
+            year: {$substr: ["$admission_date", 0, 4]},
+            //$month取出$date字段中月份
+            //$date_d的数据类型必须是date
+            //month:{$month:"$date_d"}
+            //$dateFromString把字符串转为日期
+            //month
+            month: {$substr: ["$admission_date", 5, 2]},},},
+        //匹配年份
+        {$match: {year}},
+        // 分组查询, 按月分组, count计算当月有多少条数据
+        {$group: {_id: "$month", count: {$sum: 1},},}, //排序
+        {$sort: {_id: 1}},
+    ]).exec((err, data) => {
+        return res.send({
+            status: 0,
+            data
+        })
+    });
+})
 
 
-
-
+require('./file-upload')(router) //上传文件
 
 
 module.exports = router

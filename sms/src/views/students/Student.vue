@@ -438,10 +438,7 @@ export default {
       }
     },
     getImgs() {
-
-
       return this.fileList.map(file => file.name)
-
     },
   }
 }
