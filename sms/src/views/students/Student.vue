@@ -251,7 +251,7 @@ export default {
       }).then(() => {
         studentApi.deleteById(_id).then(response => {
           const res = response.data
-          console.log(res);
+          // console.log(res);
           this.$message({
             type: res.status === 0 ? "success" : "error",
             message: res.msg
@@ -297,7 +297,7 @@ export default {
             this.teacherId = item._id
           if (item.name==="学管")
             this.managerId = item._id
-          console.log(this.teacherId,"$$",this.managerId)
+          // console.log(this.teacherId,"$$",this.managerId)
         })
 
       })
@@ -356,7 +356,7 @@ export default {
       })
     },
     setSrcList(imgList) {
-      console.log("imgList", imgList);
+      // console.log("imgList", imgList);
       return imgList.map(item => this.baseUrl + "/upload/" + item)
     },
 
@@ -392,7 +392,7 @@ export default {
           this.updateStudent.pictures = this.getImgs();
           studentApi.add(this.updateStudent).then(response => {
             const res = response.data
-            console.log(res);
+            // console.log(res);
             if (res.status === 0) {
               this.$router.replace("/student");
             }
@@ -411,7 +411,7 @@ export default {
           this.updateStudent.pictures = this.getImgs();
           studentApi.update(this.updateStudent).then(response => {
             const res = response.data
-            console.log(res);
+            // console.log(res);
             if (res.status === 0) {
               this.$router.replace("/student")
             }

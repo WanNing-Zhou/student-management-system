@@ -146,6 +146,7 @@ export default {
     this.getAllRole()
     this.getClassList()
     this.getUserList()
+    this.getStudent()
   },
   activated() {
     // 每次都给编辑器改变不同的key值使其每次切换页面都重新加载
@@ -312,7 +313,23 @@ export default {
         }
       })
     },
-    updateData(formMane){ //更新数据
+    updateData(formName){ //更新数据
+
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.updateStudent.pictures = this.getImgs();
+          studentApi.update(this.updateStudent).then(response => {
+            const res = response.data
+            console.log(res);
+            if (res.status === 0) {
+              this.$router.replace("/student")
+            }
+          })
+        } else {
+          return false
+        }
+      })
+
     },
 
     getAllRole(){
@@ -340,7 +357,7 @@ export default {
               this.managerOptions.push(item)
             }
           })
-          console.log("老师和学管",this.teacherOptions,this.managerOptions)
+          // console.log("老师和学管",this.teacherOptions,this.managerOptions)
         }
       })
     },
@@ -401,7 +418,7 @@ export default {
       this.pictureDialogVisible = true
     },
     handleDownload(file) { //下载功能
-      console.log(file);
+      // console.log(file);
     },
 
     //获取所有已上传文件的名字
@@ -417,18 +434,16 @@ export default {
           if (resp.status === 0){
             this.updateStudent = resp.data
             const {pictures} = resp.data
-            if (pictures && pictures.length>0){
+            if ( pictures && pictures.length>0){
               this.fileList = pictures.map((img,index)=>({
+                status:"success",
                 name:img,
-                url: this.baseUrl+'/upload/'+img
+                url: this.baseUrl + '/upload/' + img
               }))
             }
           }
         }))
       }
-      schoolApi.getById(_id).then(
-
-      )
     }
 
   }
