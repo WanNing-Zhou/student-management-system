@@ -5,6 +5,7 @@ module.exports = {
         // host: '0.0.0.0',
         https: false,
         open: true,
+
         proxy: { //配置代理
             //匹配/dev-api 就代理到localhost:3000,[prcess]里面值其实就是dev-api
             [process.env.VUE_APP_BASE_API]: {
@@ -21,5 +22,6 @@ module.exports = {
         }
     },
     lintOnSave: false,
-    productionSourceMap: false,
+    productionSourceMap: false, // 如果你不需要生产环境的 source map，可以将其设置为 false 以加速生产环境构建。
+    publicPath: './', //相对路径 ('./')，这样所有的资源都会被链接为相对路径，这样打出来的包可以被部署在任意路径，
 }
